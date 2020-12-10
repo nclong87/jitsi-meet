@@ -2,6 +2,8 @@
 
 import Logger from 'jitsi-meet-logger';
 
+// import _difference from 'lodash/difference';
+
 import {
     createApiEvent,
     sendAnalytics
@@ -15,6 +17,8 @@ import {
 import { parseJWTFromURLParams } from '../../react/features/base/jwt';
 import JitsiMeetJS, { JitsiRecordingConstants } from '../../react/features/base/lib-jitsi-meet';
 import { pinParticipant } from '../../react/features/base/participants';
+import { setVisibilityParticipants } from '../../react/features/base/participants/actions';
+import { VISIBILITY } from '../../react/features/base/participants/constants';
 import {
     processExternalDeviceRequest
 } from '../../react/features/device-selection/functions';
@@ -211,6 +215,34 @@ function initCommands() {
             logger.debug('Set video quality command received');
             sendAnalytics(createApiEvent('set.video.quality'));
             APP.store.dispatch(setVideoQuality(frameHeight));
+        },
+        'set-visible-participants': emails => {
+            console.log('set-visible-participants ids', emails);
+            const participants = APP.store.getState()['features/base/participants'];
+
+            console.log('participants', participants);
+
+            const visibleIds = [];
+            const invisibleIds = [];
+
+            participants.forEach(({ id, visibility, email }) => {
+                if (visibility === VISIBILITY.VISIBLE) {
+                    if (!emails.includes(email)) {
+                        invisibleIds.push(id);
+                    }
+                } else if (visibility === VISIBILITY.INVISIBLE) {
+                    if (emails.includes(email)) {
+                        visibleIds.push(id);
+                    }
+                }
+            });
+            APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds));
+
+            // const visibleIds = participants
+            //     .filter(participant => participant.visibility === VISIBILITY.VISIBLE)
+            //     .map(participant => participant.id);
+            //
+            // console.log('set-visible-participants visibleIds', visibleIds);
         },
 
         /**

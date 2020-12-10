@@ -9,9 +9,10 @@ import {
     PARTICIPANT_LEFT,
     PARTICIPANT_UPDATED,
     PIN_PARTICIPANT,
+    SET_VISIBLE_PARTICIPANTS,
     SET_LOADABLE_AVATAR_URL
 } from './actionTypes';
-import { LOCAL_PARTICIPANT_DEFAULT_ID, PARTICIPANT_ROLE } from './constants';
+import { LOCAL_PARTICIPANT_DEFAULT_ID, PARTICIPANT_ROLE, VISIBILITY } from './constants';
 
 /**
  * Participant object.
@@ -69,6 +70,7 @@ ReducerRegistry.register('features/base/participants', (state = [], action) => {
     case PARTICIPANT_ID_CHANGED:
     case PARTICIPANT_UPDATED:
     case PIN_PARTICIPANT:
+    case SET_VISIBLE_PARTICIPANTS:
         return state.map(p => _participant(p, action));
 
     case PARTICIPANT_JOINED:
@@ -159,6 +161,17 @@ function _participant(state: Object = {}, action) {
         break;
     }
 
+    case SET_VISIBLE_PARTICIPANTS: {
+        const { visibleIds, invisibleIds } = action.data;
+
+        if (visibleIds.indexOf(state.id) >= 0) {
+            return set(state, 'visibility', VISIBILITY.VISIBLE);
+        }
+        if (invisibleIds.indexOf(state.id) >= 0) {
+            return set(state, 'visibility', VISIBILITY.INVISIBLE);
+        }
+        break;
+    }
     case PIN_PARTICIPANT:
         // Currently, only one pinned participant is allowed.
         return set(state, 'pinned', state.id === action.participant.id);
@@ -216,6 +229,10 @@ function _participantJoined({ participant }) {
         connectionStatus,
         dominantSpeaker: dominantSpeaker || false,
         email,
+
+        // visibility: role === PARTICIPANT_ROLE.MODERATOR ? VISIBILITY.VISIBLE : VISIBILITY.INVISIBLE,
+
+        visibility: VISIBILITY.INVISIBLE,
         id,
         isFakeParticipant,
         isJigasi,

@@ -9,6 +9,7 @@ import {
     getParticipantById,
     pinParticipant
 } from '../../../react/features/base/participants';
+import { VISIBILITY } from '../../../react/features/base/participants/constants';
 import { getTrackByMediaTypeAndParticipant } from '../../../react/features/base/tracks';
 import UIEvents from '../../../service/UI/UIEvents';
 import { SHARED_VIDEO_CONTAINER_TYPE } from '../shared_video/SharedVideo';
@@ -70,11 +71,16 @@ function getLocalParticipant() {
 const VideoLayout = {
     init(emitter) {
         eventEmitter = emitter;
+        const localParticipant = getLocalParticipant();
 
         localVideoThumbnail = new LocalVideo(
             VideoLayout,
             emitter,
             this._updateLargeVideoIfDisplayed.bind(this));
+
+        if (localParticipant.visibility === VISIBILITY.INVISIBLE) {
+            localVideoThumbnail.setVisible(false);
+        }
 
         this.registerListeners();
     },
@@ -132,7 +138,7 @@ const VideoLayout = {
 
         this.onVideoTypeChanged(localId, stream.videoType);
 
-        localVideoThumbnail.changeVideo(stream);
+        localVideoThumbnail && localVideoThumbnail.changeVideo(stream);
 
         this._updateLargeVideoIfDisplayed(localId);
     },
@@ -147,7 +153,7 @@ const VideoLayout = {
         // FIXME: replace this call with a generic update call once SmallVideo
         // only contains a ReactElement. Then remove this call once the
         // Filmstrip is fully in React.
-        localVideoThumbnail.updateIndicators();
+        localVideoThumbnail && localVideoThumbnail.updateIndicators();
     },
 
     /**
@@ -155,7 +161,7 @@ const VideoLayout = {
      * @param {boolean} true to make the local video visible, false - otherwise
      */
     setLocalVideoVisible(visible) {
-        localVideoThumbnail.setVisible(visible);
+        localVideoThumbnail && localVideoThumbnail.setVisible(visible);
     },
 
     onRemoteStreamAdded(stream) {
@@ -268,6 +274,10 @@ const VideoLayout = {
             thumbnail.focus(pinnedParticipantID === thumbnail.getId()));
     },
 
+    addLocalParticipantContainer() {
+        localVideoThumbnail && localVideoThumbnail.setVisible(true);
+    },
+
     /**
      * Creates a participant container for the given id.
      *
@@ -347,7 +357,7 @@ const VideoLayout = {
     onDisplayNameChanged(id) {
         if (id === 'localVideoContainer'
             || APP.conference.isLocalId(id)) {
-            localVideoThumbnail.updateDisplayName();
+            localVideoThumbnail && localVideoThumbnail.updateDisplayName();
         } else {
             const remoteVideo = remoteVideos[id];
 
@@ -434,7 +444,7 @@ const VideoLayout = {
                 remoteVideo.removeConnectionIndicator();
             }
         }
-        localVideoThumbnail.removeConnectionIndicator();
+        localVideoThumbnail && localVideoThumbnail.removeConnectionIndicator();
     },
 
     removeParticipantContainer(id) {
@@ -452,6 +462,11 @@ const VideoLayout = {
             delete remoteVideos[id];
             remoteVideo.remove();
         } else {
+            const localParticipant = getLocalParticipant();
+
+            if (localParticipant.id === id) {
+                localVideoThumbnail && localVideoThumbnail.setVisible(false);
+            }
             logger.warn(`No remote video for ${id}`);
         }
     },

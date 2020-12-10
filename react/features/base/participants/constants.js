@@ -63,3 +63,13 @@ export const PARTICIPANT_ROLE = {
     NONE: 'none',
     PARTICIPANT: 'participant'
 };
+
+/**
+ * The set of possible XMPP MUC roles for conference participants.
+ *
+ * @enum {string}
+ */
+export const VISIBILITY = {
+    VISIBLE: 'visible',
+    INVISIBLE: 'invisible'
+};

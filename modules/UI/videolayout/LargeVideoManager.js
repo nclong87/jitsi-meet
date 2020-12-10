@@ -13,6 +13,7 @@ import {
 } from '../../../react/features/base/lib-jitsi-meet';
 import { VIDEO_TYPE } from '../../../react/features/base/media';
 import { getParticipantById } from '../../../react/features/base/participants';
+import { VISIBILITY } from '../../../react/features/base/participants/constants';
 import { CHAT_SIZE } from '../../../react/features/chat';
 import {
     updateKnownLargeVideoResolution
@@ -185,6 +186,7 @@ export default class LargeVideoManager {
      *
      */
     scheduleLargeVideoUpdate() {
+        console.log('scheduleLargeVideoUpdate');
         if (this.updateInProcess || !this.newStreamData) {
             return;
         }

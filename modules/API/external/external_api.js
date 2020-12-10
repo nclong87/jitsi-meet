@@ -36,6 +36,7 @@ const commands = {
     muteEveryone: 'mute-everyone',
     password: 'password',
     pinParticipant: 'pin-participant',
+    setVisibleParticipants: 'set-visible-participants',
     resizeLargeVideo: 'resize-large-video',
     sendEndpointTextMessage: 'send-endpoint-text-message',
     sendTones: 'send-tones',
@@ -929,6 +930,16 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
      */
     pinParticipant(participantId) {
         this.executeCommand('pinParticipant', participantId);
+    }
+
+    /**
+     * Set a participants on to the stage.
+     *
+     * @param {string} participantIds - Participant ids (JID) of the participants.
+     * @returns {void}
+     */
+    setVisibleParticipants(participantIds) {
+        this.executeCommand('setVisibleParticipants', participantIds);
     }
 
     /**

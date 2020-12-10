@@ -8,8 +8,10 @@ import {
     PARTICIPANT_LEFT,
     PARTICIPANT_UPDATED,
     PIN_PARTICIPANT,
+    SET_VISIBLE_PARTICIPANTS,
     getParticipantById
 } from '../base/participants';
+import { VISIBILITY } from '../base/participants/constants';
 import { MiddlewareRegistry } from '../base/redux';
 import { TRACK_ADDED, TRACK_REMOVED } from '../base/tracks';
 import { SET_FILMSTRIP_VISIBLE } from '../filmstrip';
@@ -42,7 +44,7 @@ MiddlewareRegistry.register(store => next => action => {
         break;
 
     case PARTICIPANT_JOINED:
-        if (!action.participant.local) {
+        if (!action.participant.local && action.participant?.visibility === VISIBILITY.VISIBLE) {
             VideoLayout.addRemoteParticipantContainer(
                 getParticipantById(store.getState(), action.participant.id));
         }
@@ -51,6 +53,22 @@ MiddlewareRegistry.register(store => next => action => {
     case PARTICIPANT_LEFT:
         VideoLayout.removeParticipantContainer(action.participant.id);
         break;
+
+    case SET_VISIBLE_PARTICIPANTS: {
+        const { visibleIds, invisibleIds } = action.data;
+
+        invisibleIds.forEach(id => VideoLayout.removeParticipantContainer(id));
+        visibleIds.forEach(id => {
+            const participant = getParticipantById(store.getState(), id);
+
+            if (participant.local) {
+                VideoLayout.addLocalParticipantContainer();
+            } else {
+                VideoLayout.addRemoteParticipantContainer(participant);
+            }
+        });
+        break;
+    }
 
     case PARTICIPANT_UPDATED: {
         // Look for actions that triggered a change to connectionStatus. This is
