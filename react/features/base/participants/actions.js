@@ -1,3 +1,6 @@
+import Logger from 'jitsi-meet-logger';
+const logger = Logger.getLogger(__filename);
+
 import { NOTIFICATION_TIMEOUT, showNotification } from '../../notifications';
 import { set } from '../redux';
 
@@ -515,7 +518,7 @@ export function setLoadableAvatarUrl(participantId, url) {
  * }}
  */
 export function setVisibilityParticipants(visibleIds, invisibleIds) {
-    console.log('setVisibilityParticipants', visibleIds, invisibleIds);
+    logger.info('setVisibilityParticipants', visibleIds, invisibleIds);
 
     return {
         type: SET_VISIBLE_PARTICIPANTS,

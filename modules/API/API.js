@@ -222,7 +222,7 @@ function initCommands() {
             APP.store.dispatch(setFilmstripVisible(visible));
         },
         'set-room-data': data => {
-            console.log('set-room-data', data);
+            logger.info('set-room-data', data);
             const { isCamOn, isMicOn, speakerEmails, isOpenAll } = data;
             const visibleIds = [];
             const invisibleIds = [];
@@ -237,7 +237,7 @@ function initCommands() {
             if (speakerEmails !== undefined) {
                 const participants = APP.store.getState()['features/base/participants'];
 
-                console.log('participants', participants);
+                logger.debug('participants', participants);
                 participants.forEach(({ id, visibility, email }) => {
                     let isVisible = speakerEmails.indexOf(email) >= 0;
 

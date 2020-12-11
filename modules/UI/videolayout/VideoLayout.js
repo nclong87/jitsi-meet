@@ -25,6 +25,7 @@ const logger = Logger.getLogger(__filename);
 
 const remoteVideos = {};
 let localVideoThumbnail = null;
+let localParticipant = null;
 
 let eventEmitter = null;
 
@@ -72,7 +73,7 @@ function getLocalParticipant() {
 const VideoLayout = {
     init(emitter) {
         eventEmitter = emitter;
-        const localParticipant = getLocalParticipant();
+        localParticipant = getLocalParticipant();
 
         localVideoThumbnail = new LocalVideo(
             VideoLayout,
@@ -276,7 +277,16 @@ const VideoLayout = {
     },
 
     addLocalParticipantContainer() {
-        localVideoThumbnail && localVideoThumbnail.setVisible(true);
+        if (localVideoThumbnail) {
+            localVideoThumbnail.setVisible(true);
+            const state = APP.store.getState();
+            const numSpeakers = getCurrentSpeakerIds(state).length;
+
+            logger.info('numSpeakers', numSpeakers);
+            if (numSpeakers === 1) {
+                largeVideo.setVisible(true);
+            }
+        }
     },
 
     /**
@@ -336,10 +346,10 @@ const VideoLayout = {
 
     onTrackUpdated(id) {
         const state = APP.store.getState();
-        const hasSpeaker = getCurrentSpeakerIds(state).length > 0;
+        const numSpeakers = getCurrentSpeakerIds(state).length;
 
-        console.log('hasSpeaker', hasSpeaker);
-        if (!hasSpeaker) {
+        logger.info('numSpeakers', numSpeakers);
+        if (numSpeakers > 0) {
             this.updateLargeVideo(id, true);
         }
     },
@@ -473,12 +483,8 @@ const VideoLayout = {
             delete remoteVideos[id];
             remoteVideo.remove();
         } else {
-            const localParticipant = getLocalParticipant();
-
-            if (localParticipant.id === id) {
-                localVideoThumbnail && localVideoThumbnail.setVisible(false);
-            }
             logger.warn(`No remote video for ${id}`);
+            localVideoThumbnail && localVideoThumbnail.setVisible(false);
         }
     },
 

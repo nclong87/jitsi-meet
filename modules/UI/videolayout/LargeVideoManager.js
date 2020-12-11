@@ -186,11 +186,10 @@ export default class LargeVideoManager {
      *
      */
     scheduleLargeVideoUpdate() {
-        console.log('scheduleLargeVideoUpdate');
         if (this.updateInProcess || !this.newStreamData) {
             return;
         }
-
+        logger.debug('scheduleLargeVideoUpdate');
         this.updateInProcess = true;
 
         // Include hide()/fadeOut only if we're switching between users
@@ -297,6 +296,19 @@ export default class LargeVideoManager {
             this.eventEmitter.emit(UIEvents.LARGE_VIDEO_ID_CHANGED, this.id);
             this.scheduleLargeVideoUpdate();
         });
+    }
+
+    /**
+     * Shows or hides the local video container.
+     * @param {boolean} true to make the local video container visible, false
+     * otherwise
+     */
+    setVisible(visible) {
+        if (visible) {
+            this.videoContainer.show();
+        } else {
+            this.videoContainer.hide();
+        }
     }
 
     /**
