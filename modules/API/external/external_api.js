@@ -36,7 +36,9 @@ const commands = {
     muteEveryone: 'mute-everyone',
     password: 'password',
     pinParticipant: 'pin-participant',
+    setRoomData: 'set-room-data',
     setVisibleParticipants: 'set-visible-participants',
+    setFilmstripVisible: 'set-filmstrip-visible',
     resizeLargeVideo: 'resize-large-video',
     sendEndpointTextMessage: 'send-endpoint-text-message',
     sendTones: 'send-tones',
@@ -940,6 +942,26 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
      */
     setVisibleParticipants(participantIds) {
         this.executeCommand('setVisibleParticipants', participantIds);
+    }
+
+    /**
+     * Set FilmStrip visibility.
+     *
+     * @param {boolean} visible - Is visbile or not.
+     * @returns {void}
+     */
+    setFilmstripVisible(visible) {
+        this.executeCommand('setFilmstripVisible', visible);
+    }
+
+    /**
+     * Set room data.
+     *
+     * @param {Object} data - Room data.
+     * @returns {void}
+     */
+    setRoomData(data) {
+        this.executeCommand('setRoomData', data);
     }
 
     /**

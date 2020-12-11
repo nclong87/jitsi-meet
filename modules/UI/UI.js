@@ -363,6 +363,10 @@ UI.setVideoMuted = function(id) {
     }
 };
 
+UI.onTrackUpdated = function(id) {
+    VideoLayout.onTrackUpdated(id);
+};
+
 /**
  * Triggers an update of remote video and large video displays so they may pick
  * up any state changes that have occurred elsewhere.

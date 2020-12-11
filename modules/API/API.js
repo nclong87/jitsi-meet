@@ -1,4 +1,5 @@
 // @flow
+/* eslint no-lonely-if: 0 */
 
 import Logger from 'jitsi-meet-logger';
 
@@ -24,6 +25,7 @@ import {
 } from '../../react/features/device-selection/functions';
 import { isEnabled as isDropboxEnabled } from '../../react/features/dropbox';
 import { toggleE2EE } from '../../react/features/e2ee/actions';
+import { setFilmstripVisible } from '../../react/features/filmstrip';
 import { invite } from '../../react/features/invite';
 import {
     captureLargeVideoScreenshot,
@@ -34,7 +36,7 @@ import { toggleLobbyMode } from '../../react/features/lobby/actions.web';
 import { RECORDING_TYPES } from '../../react/features/recording/constants';
 import { getActiveSession } from '../../react/features/recording/functions';
 import { muteAllParticipants } from '../../react/features/remote-video-menu/actions';
-import { toggleTileView } from '../../react/features/video-layout';
+import { toggleTileView, setTileView } from '../../react/features/video-layout';
 import { setVideoQuality } from '../../react/features/video-quality';
 import { getJitsiMeetTransport } from '../transport';
 
@@ -216,27 +218,95 @@ function initCommands() {
             sendAnalytics(createApiEvent('set.video.quality'));
             APP.store.dispatch(setVideoQuality(frameHeight));
         },
+        'set-filmstrip-visible': visible => {
+            APP.store.dispatch(setFilmstripVisible(visible));
+        },
+        'set-room-data': data => {
+            console.log('set-room-data', data);
+            const { isCamOn, isMicOn, speakerEmails, isOpenAll } = data;
+            const visibleIds = [];
+            const invisibleIds = [];
+            const currentSpeakers = [];
+
+            if (isMicOn !== undefined) {
+                APP.conference.muteAudio(!isMicOn);
+            }
+            if (isCamOn !== undefined) {
+                APP.conference.muteVideo(!isCamOn);
+            }
+            if (speakerEmails !== undefined) {
+                const participants = APP.store.getState()['features/base/participants'];
+
+                console.log('participants', participants);
+                participants.forEach(({ id, visibility, email }) => {
+                    let isVisible = speakerEmails.indexOf(email) >= 0;
+
+                    if (!isVisible && isOpenAll === true) {
+                        isVisible = true;
+                    }
+
+                    if (isVisible) {
+                        currentSpeakers.push(id);
+                    }
+                    if (visibility === VISIBILITY.VISIBLE) {
+                        if (!isVisible) {
+                            invisibleIds.push(id);
+                        }
+                    } else if (visibility === VISIBILITY.INVISIBLE) {
+                        if (isVisible) {
+                            visibleIds.push(id);
+                        }
+                    }
+                });
+                APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
+                setTimeout(() => {
+                    APP.store.dispatch(setTileView(currentSpeakers.length > 1));
+                    if (currentSpeakers.length === 1) {
+                        sendAnalytics(createApiEvent('participant.pinned'));
+                        APP.store.dispatch(pinParticipant(currentSpeakers[0]));
+                    }
+                }, 300);
+            }
+        },
         'set-visible-participants': emails => {
             console.log('set-visible-participants ids', emails);
             const participants = APP.store.getState()['features/base/participants'];
 
-            console.log('participants', participants);
-
             const visibleIds = [];
             const invisibleIds = [];
+            const currentSpeakers = [];
 
             participants.forEach(({ id, visibility, email }) => {
+                const isVisible = emails.indexOf(email) >= 0;
+
+                if (isVisible) {
+                    currentSpeakers.push(id);
+                }
                 if (visibility === VISIBILITY.VISIBLE) {
-                    if (!emails.includes(email)) {
+                    if (!isVisible) {
                         invisibleIds.push(id);
                     }
                 } else if (visibility === VISIBILITY.INVISIBLE) {
-                    if (emails.includes(email)) {
+                    if (isVisible) {
                         visibleIds.push(id);
                     }
                 }
             });
-            APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds));
+            APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
+
+            // sendAnalytics(createApiEvent('participant.pinned'));
+            // if (currentSpeakers.length === 1) {
+            //     APP.store.dispatch(pinParticipant(currentSpeakers[0]));
+            // } else {
+            //     APP.store.dispatch(pinParticipant(null));
+            // }
+            setTimeout(() => {
+                APP.store.dispatch(setTileView(currentSpeakers.length > 1));
+                if (currentSpeakers.length === 1) {
+                    sendAnalytics(createApiEvent('participant.pinned'));
+                    APP.store.dispatch(pinParticipant(currentSpeakers[0]));
+                }
+            }, 300);
 
             // const visibleIds = participants
             //     .filter(participant => participant.visibility === VISIBILITY.VISIBLE)

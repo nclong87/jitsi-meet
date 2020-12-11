@@ -31,6 +31,7 @@ import {
     getParticipants,
     participantUpdated
 } from '../../../base/participants';
+import { VISIBILITY } from '../../../base/participants/constants';
 import { connect, equals } from '../../../base/redux';
 import { OverflowMenuItem } from '../../../base/toolbox/components';
 import { getLocalVideoTrack, toggleScreensharing } from '../../../base/tracks';
@@ -147,6 +148,11 @@ type Props = {
      * The ID of the local participant.
      */
     _localParticipantID: String,
+
+    /**
+     * Is local participant visible
+     */
+    _isVisible: Boolean,
 
     /**
      * The subsection of Redux state for local recording
@@ -1218,6 +1224,7 @@ class Toolbox extends Component<Props, State> {
             _chatOpen,
             _overflowMenuVisible,
             _raisedHand,
+            _isVisible,
             t
         } = this.props;
         const overflowMenuContent = this._renderOverflowMenuContent();
@@ -1253,7 +1260,7 @@ class Toolbox extends Component<Props, State> {
         if (this._shouldShowButton('chat')) {
             buttonsLeft.push('chat');
         }
-        if (this._shouldShowButton('desktop')
+        if (_isVisible && this._shouldShowButton('desktop')
                 && this._isDesktopSharingButtonVisible()) {
             buttonsLeft.push('desktop');
         }
@@ -1339,12 +1346,14 @@ class Toolbox extends Component<Props, State> {
                             && <ClosedCaptionButton />
                     }
                 </div>
-                <div className = 'button-group-center'>
-                    { this._renderAudioButton() }
-                    <HangupButton
-                        visible = { this._shouldShowButton('hangup') } />
-                    { this._renderVideoButton() }
-                </div>
+                {_isVisible && (
+                    <div className = 'button-group-center'>
+                        { this._renderAudioButton() }
+                        <HangupButton
+                            visible = { this._shouldShowButton('hangup') } />
+                        { this._renderVideoButton() }
+                    </div>
+                )}
                 <div className = 'button-group-right'>
                     { buttonsRight.indexOf('localrecording') !== -1
                         && <LocalRecordingButton
@@ -1443,6 +1452,7 @@ function _mapStateToProps(state) {
         _fullScreen: fullScreen,
         _tileViewEnabled: shouldDisplayTileView(state),
         _localParticipantID: localParticipant.id,
+        _isVisible: localParticipant.visibility === VISIBILITY.VISIBLE,
         _localRecState: localRecordingStates,
         _locked: locked,
         _overflowMenuVisible: overflowMenuVisible,

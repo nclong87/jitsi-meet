@@ -7,6 +7,7 @@ import {
     getLocalParticipant as getLocalParticipantFromStore,
     getPinnedParticipant,
     getParticipantById,
+    getCurrentSpeakerIds,
     pinParticipant
 } from '../../../react/features/base/participants';
 import { VISIBILITY } from '../../../react/features/base/participants/constants';
@@ -331,6 +332,16 @@ const VideoLayout = {
             $(videoElement).show();
         }
         this._updateLargeVideoIfDisplayed(resourceJid, true);
+    },
+
+    onTrackUpdated(id) {
+        const state = APP.store.getState();
+        const hasSpeaker = getCurrentSpeakerIds(state).length > 0;
+
+        console.log('hasSpeaker', hasSpeaker);
+        if (!hasSpeaker) {
+            this.updateLargeVideo(id, true);
+        }
     },
 
     /**

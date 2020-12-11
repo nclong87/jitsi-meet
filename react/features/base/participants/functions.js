@@ -1,6 +1,7 @@
 // @flow
 
 import { getGravatarURL } from '@jitsi/js-utils/avatar';
+import memoizeOne from 'memoize-one';
 import type { Store } from 'redux';
 
 import { JitsiParticipantConnectionStatus } from '../lib-jitsi-meet';
@@ -12,6 +13,7 @@ import { createDeferred } from '../util';
 import {
     JIGASI_PARTICIPANT_ICON,
     MAX_DISPLAY_NAME_LENGTH,
+    VISIBILITY,
     PARTICIPANT_ROLE
 } from './constants';
 import { preloadImage } from './preloadImage';
@@ -124,6 +126,13 @@ export function getParticipantById(
 
     return participants.find(p => p.id === id);
 }
+
+export const getCurrentSpeakerIds = memoizeOne(stateful => {
+    console.log('getCurrentSpeakerIds');
+    const participants = getParticipants(stateful);
+
+    return participants.filter(p => p.visibility === VISIBILITY.VISIBLE).map(p => p.id);
+});
 
 /**
  * Returns a count of the known participants in the passed in redux state,

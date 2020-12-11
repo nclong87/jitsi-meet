@@ -12,7 +12,7 @@ import {
     JitsiParticipantConnectionStatus
 } from '../../../react/features/base/lib-jitsi-meet';
 import { VIDEO_TYPE } from '../../../react/features/base/media';
-import { getParticipantById } from '../../../react/features/base/participants';
+import { getParticipantById, getCurrentSpeakerIds } from '../../../react/features/base/participants';
 import { VISIBILITY } from '../../../react/features/base/participants/constants';
 import { CHAT_SIZE } from '../../../react/features/chat';
 import {
@@ -236,9 +236,11 @@ export default class LargeVideoManager {
                                 === JitsiParticipantConnectionStatus.ACTIVE
                         || wasUsersImageCached);
 
+            const hasSpeaker = getCurrentSpeakerIds(APP.store.getState()).length > 0;
             const showAvatar
                 = isVideoContainer
-                    && ((APP.conference.isAudioOnly() && videoType !== VIDEO_TYPE.DESKTOP) || !isVideoRenderable);
+                    && ((APP.conference.isAudioOnly() && videoType !== VIDEO_TYPE.DESKTOP) || !isVideoRenderable)
+                    && hasSpeaker;
 
             let promise;
 
@@ -277,6 +279,12 @@ export default class LargeVideoManager {
             this.updatePresenceLabel(id);
 
             this.videoContainer.positionRemoteStatusMessages();
+
+            if (hasSpeaker) {
+                this.videoContainer.show();
+            } else {
+                this.videoContainer.hide();
+            }
 
             // resolve updateLargeVideo promise after everything is done
             promise.then(resolve);
