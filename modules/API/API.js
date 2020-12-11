@@ -19,7 +19,7 @@ import { parseJWTFromURLParams } from '../../react/features/base/jwt';
 import JitsiMeetJS, { JitsiRecordingConstants } from '../../react/features/base/lib-jitsi-meet';
 import { pinParticipant } from '../../react/features/base/participants';
 import { setVisibilityParticipants } from '../../react/features/base/participants/actions';
-import { VISIBILITY } from '../../react/features/base/participants/constants';
+import { VISIBILITY, PARTICIPANT_ROLE } from '../../react/features/base/participants/constants';
 import {
     processExternalDeviceRequest
 } from '../../react/features/device-selection/functions';
@@ -238,11 +238,15 @@ function initCommands() {
                 const participants = APP.store.getState()['features/base/participants'];
 
                 logger.debug('participants', participants);
-                participants.forEach(({ id, visibility, email }) => {
+                participants.forEach(({ id, visibility, email, role }) => {
                     let isVisible = speakerEmails.indexOf(email) >= 0;
 
                     if (!isVisible && isOpenAll === true) {
-                        isVisible = true;
+                        if (role === PARTICIPANT_ROLE.MODERATOR) {
+                            isVisible = visibility.VISIBLE;
+                        } else {
+                            isVisible = true;
+                        }
                     }
 
                     if (isVisible) {
