@@ -57,7 +57,11 @@ MiddlewareRegistry.register(store => next => action => {
     case SET_VISIBLE_PARTICIPANTS: {
         const { visibleIds, invisibleIds } = action.data;
 
-        invisibleIds.forEach(id => VideoLayout.removeParticipantContainer(id));
+        invisibleIds.forEach(id => {
+            const participant = getParticipantById(store.getState(), id);
+
+            VideoLayout.removeParticipantContainer(id, participant.local);
+        });
         visibleIds.forEach(id => {
             const participant = getParticipantById(store.getState(), id);
 

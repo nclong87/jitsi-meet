@@ -468,11 +468,18 @@ const VideoLayout = {
         localVideoThumbnail && localVideoThumbnail.removeConnectionIndicator();
     },
 
-    removeParticipantContainer(id) {
+    removeParticipantContainer(id, isLocal = false) {
         // Unlock large video
         if (this.getPinnedId() === id) {
             logger.info('Focused video owner has left the conference');
             APP.store.dispatch(pinParticipant(null));
+        }
+
+        if (isLocal) {
+            logger.info(`Removing local video: ${id}`);
+            localVideoThumbnail && localVideoThumbnail.setVisible(false);
+
+            return;
         }
 
         const remoteVideo = remoteVideos[id];
@@ -484,7 +491,6 @@ const VideoLayout = {
             remoteVideo.remove();
         } else {
             logger.warn(`No remote video for ${id}`);
-            localVideoThumbnail && localVideoThumbnail.setVisible(false);
         }
     },
 
