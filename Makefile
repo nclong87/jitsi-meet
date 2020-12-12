@@ -13,8 +13,22 @@ STYLES_DESTINATION = css/all.css
 STYLES_MAIN = css/main.scss
 WEBPACK = ./node_modules/.bin/webpack
 WEBPACK_DEV_SERVER = ./node_modules/.bin/webpack-dev-server
+TIMESTAMP = $(shell /bin/date +%Y%m%d%H%M%S)
 
-all: compile deploy clean
+all: prepare compile deploy clean
+
+prepare:
+	sed -i ''  -e "s/app.bundle.min.js?v=[[:digit:]]*/app.bundle.min.js?v=$(TIMESTAMP)/" index.html
+	sed -i ''  -e "s/app.bundle.min.js?v=[[:digit:]]*/app.bundle.min.js?v=$(TIMESTAMP)/" static/prejoin.html
+	sed -i ''  -e "s/all.css?v=[[:digit:]]*/all.css?v=$(TIMESTAMP)/" index.html
+	sed -i ''  -e "s/all.css?v=[[:digit:]]*/all.css?v=$(TIMESTAMP)/" static/prejoin.html
+	sed -i ''  -e "s/all.css?v=[[:digit:]]*/all.css?v=$(TIMESTAMP)/" static/deviceSelectionPopup.html
+	sed -i ''  -e "s/interface_config.js?v=[[:digit:]]*/interface_config.js?v=$(TIMESTAMP)/" index.html
+	sed -i ''  -e "s/interface_config.js?v=[[:digit:]]*/interface_config.js?v=$(TIMESTAMP)/" static/prejoin.html
+	sed -i ''  -e "s/interface_config.js?v=[[:digit:]]*/interface_config.js?v=$(TIMESTAMP)/" static/deviceSelectionPopup.html
+	sed -i ''  -e "s/lib-jitsi-meet.min.js?v=[[:digit:]]*/lib-jitsi-meet.min.js?v=$(TIMESTAMP)/" index.html
+	sed -i ''  -e "s/lib-jitsi-meet.min.js?v=[[:digit:]]*/lib-jitsi-meet.min.js?v=$(TIMESTAMP)/" static/prejoin.html
+	sed -i ''  -e "s/lib-jitsi-meet.min.js?v=[[:digit:]]*/lib-jitsi-meet.min.js?v=$(TIMESTAMP)/" static/deviceSelectionPopup.html
 
 compile:
 	$(WEBPACK) -p

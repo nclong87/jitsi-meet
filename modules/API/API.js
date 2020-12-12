@@ -241,23 +241,23 @@ function initCommands() {
                 participants.forEach(({ id, visibility, email, role }) => {
                     let isVisible = speakerEmails.indexOf(email) >= 0;
 
-                    if (!isVisible && isOpenAll === true) {
+                    if (isVisible === false && isOpenAll === true) {
                         if (role === PARTICIPANT_ROLE.MODERATOR) {
-                            isVisible = visibility.VISIBLE;
+                            isVisible = visibility === VISIBILITY.VISIBLE;
                         } else {
                             isVisible = true;
                         }
                     }
 
-                    if (isVisible) {
+                    if (isVisible === true) {
                         currentSpeakers.push(id);
                     }
                     if (visibility === VISIBILITY.VISIBLE) {
-                        if (!isVisible) {
+                        if (isVisible === false) {
                             invisibleIds.push(id);
                         }
                     } else if (visibility === VISIBILITY.INVISIBLE) {
-                        if (isVisible) {
+                        if (isVisible === true) {
                             visibleIds.push(id);
                         }
                     }

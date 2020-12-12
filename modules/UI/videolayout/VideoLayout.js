@@ -349,8 +349,10 @@ const VideoLayout = {
         const numSpeakers = getCurrentSpeakerIds(state).length;
 
         logger.info('numSpeakers', numSpeakers);
-        if (numSpeakers > 0) {
+        if (numSpeakers === 0) {
             this.updateLargeVideo(id, true);
+        } else {
+            largeVideo.setVisible(true);
         }
     },
 
