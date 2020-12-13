@@ -299,6 +299,18 @@ export default class LargeVideoManager {
     }
 
     /**
+     * Shows or hides avatar.
+     * @param {boolean} true to make the local video container visible, false
+     * otherwise
+     */
+    setAvatarVisible(visible) {
+        const container = this.getCurrentContainer();
+
+        console.log('setAvatarVisible', visible);
+        container.showAvatar(visible);
+    }
+
+    /**
      * Shows or hides the local video container.
      * @param {boolean} true to make the local video container visible, false
      * otherwise

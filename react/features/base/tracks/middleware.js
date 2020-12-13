@@ -152,7 +152,7 @@ MiddlewareRegistry.register(store => next => action => {
             const participantID = jitsiTrack.getParticipantId();
             const isVideoTrack = jitsiTrack.type !== MEDIA_TYPE.AUDIO;
 
-            APP.UI.onTrackUpdated(participantID);
+            APP.UI.onTrackUpdated(jitsiTrack);
             if (isVideoTrack) {
                 // Do not change the video mute state for local presenter tracks.
                 if (jitsiTrack.type === MEDIA_TYPE.PRESENTER) {

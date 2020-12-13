@@ -363,8 +363,8 @@ UI.setVideoMuted = function(id) {
     }
 };
 
-UI.onTrackUpdated = function(id) {
-    VideoLayout.onTrackUpdated(id);
+UI.onTrackUpdated = function(jitsiTrack) {
+    VideoLayout.onTrackUpdated(jitsiTrack);
 };
 
 /**

@@ -344,16 +344,29 @@ const VideoLayout = {
         this._updateLargeVideoIfDisplayed(resourceJid, true);
     },
 
-    onTrackUpdated(id) {
-        const state = APP.store.getState();
-        const numSpeakers = getCurrentSpeakerIds(state).length;
+    onTrackUpdated(jitsiTrack) {
+        const isVideoTrack = jitsiTrack.type !== MEDIA_TYPE.AUDIO;
 
-        logger.info('numSpeakers', numSpeakers);
-        if (numSpeakers === 0) {
-            this.updateLargeVideo(id, true);
-        } else {
-            largeVideo.setVisible(true);
+        // const muted = jitsiTrack.isMuted();
+
+        // console.log('jitsiTrack', jitsiTrack);
+
+        if (!isVideoTrack) {
+            const state = APP.store.getState();
+            const numSpeakers = getCurrentSpeakerIds(state).length;
+
+            logger.info('numSpeakers', numSpeakers);
+
+            largeVideo.setAvatarVisible(numSpeakers > 0);
         }
+
+        // const state = APP.store.getState();
+        // const numSpeakers = getCurrentSpeakerIds(state).length;
+        //
+        // logger.info('numSpeakers', numSpeakers);
+        // if (numSpeakers === 0) {
+        //     this.updateLargeVideo(id, true);
+        // }
     },
 
     /**
