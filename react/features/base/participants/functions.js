@@ -262,6 +262,23 @@ function _getAllParticipants(stateful) {
 }
 
 /**
+ * Returns array of participants from Redux state.
+ *
+ * @param {(Function|Object|Participant[])} stateful - The redux state
+ * features/base/participants, the (whole) redux state, or redux's
+ * {@code getState} function to be used to retrieve the state
+ * features/base/participants.
+ * @private
+ * @returns {Participant[]}
+ */
+export function getSpeakers(stateful) {
+    return (
+        Array.isArray(stateful)
+            ? stateful
+            : toState(stateful)['features/base/speakers'] || []);
+}
+
+/**
  * Returns the youtube fake participant.
  * At the moment it is considered the youtube participant the only fake participant in the list.
  *

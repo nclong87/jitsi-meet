@@ -7,7 +7,7 @@ import {
     getLocalParticipant as getLocalParticipantFromStore,
     getPinnedParticipant,
     getParticipantById,
-    getCurrentSpeakerIds,
+    getSpeakers,
     pinParticipant
 } from '../../../react/features/base/participants';
 import { VISIBILITY } from '../../../react/features/base/participants/constants';
@@ -280,7 +280,7 @@ const VideoLayout = {
         if (localVideoThumbnail) {
             localVideoThumbnail.setVisible(true);
             const state = APP.store.getState();
-            const numSpeakers = getCurrentSpeakerIds(state).length;
+            const numSpeakers = getSpeakers(state).length;
 
             logger.info('numSpeakers', numSpeakers);
             if (numSpeakers === 1) {
@@ -349,15 +349,19 @@ const VideoLayout = {
 
         // const muted = jitsiTrack.isMuted();
 
-        // console.log('jitsiTrack', jitsiTrack);
+        console.log('jitsiTrack', jitsiTrack);
 
         if (!isVideoTrack) {
             const state = APP.store.getState();
-            const numSpeakers = getCurrentSpeakerIds(state).length;
+            const numSpeakers = getSpeakers(state).length;
 
             logger.info('numSpeakers', numSpeakers);
 
-            largeVideo.setAvatarVisible(numSpeakers > 0);
+            if (numSpeakers === 0) {
+                largeVideo && largeVideo.setAvatarVisible(false);
+            }
+
+            // largeVideo.setAvatarVisible(numSpeakers > 0);
         }
 
         // const state = APP.store.getState();

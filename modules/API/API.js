@@ -19,7 +19,7 @@ import { parseJWTFromURLParams } from '../../react/features/base/jwt';
 import JitsiMeetJS, { JitsiRecordingConstants } from '../../react/features/base/lib-jitsi-meet';
 import { pinParticipant } from '../../react/features/base/participants';
 import { setVisibilityParticipants } from '../../react/features/base/participants/actions';
-import { VISIBILITY, PARTICIPANT_ROLE } from '../../react/features/base/participants/constants';
+import { VISIBILITY } from '../../react/features/base/participants/constants';
 import {
     processExternalDeviceRequest
 } from '../../react/features/device-selection/functions';
@@ -235,14 +235,18 @@ function initCommands() {
                 APP.conference.muteVideo(!isCamOn);
             }
             if (speakerEmails !== undefined) {
+                const moderatorEmails = data.moderatorEmails === undefined ? [] : data.moderatorEmails;
                 const participants = APP.store.getState()['features/base/participants'];
 
                 logger.debug('participants', participants);
-                participants.forEach(({ id, visibility, email, role }) => {
+                let firstSpeakerId = null;
+
+                participants.forEach(({ id, visibility, email }) => {
                     let isVisible = speakerEmails.indexOf(email) >= 0;
+                    const isModerator = moderatorEmails.indexOf(email) >= 0;
 
                     if (isVisible === false && isOpenAll === true) {
-                        if (role === PARTICIPANT_ROLE.MODERATOR) {
+                        if (isModerator) {
                             isVisible = visibility === VISIBILITY.VISIBLE;
                         } else {
                             isVisible = true;
@@ -250,26 +254,36 @@ function initCommands() {
                     }
 
                     if (isVisible === true) {
-                        currentSpeakers.push(id);
+                        if (!firstSpeakerId) {
+                            firstSpeakerId = id;
+                        }
+                        currentSpeakers.push(email);
                     }
                     if (visibility === VISIBILITY.VISIBLE) {
                         if (isVisible === false) {
-                            invisibleIds.push(id);
+                            invisibleIds.push(email);
                         }
                     } else if (visibility === VISIBILITY.INVISIBLE) {
                         if (isVisible === true) {
-                            visibleIds.push(id);
+                            visibleIds.push(email);
                         }
                     }
                 });
                 APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
-                setTimeout(() => {
-                    APP.store.dispatch(setTileView(currentSpeakers.length > 1));
-                    if (currentSpeakers.length === 1) {
-                        sendAnalytics(createApiEvent('participant.pinned'));
-                        APP.store.dispatch(pinParticipant(currentSpeakers[0]));
-                    }
-                }, 300);
+                if (currentSpeakers.length === 1) {
+                    sendAnalytics(createApiEvent('participant.pinned'));
+                    APP.store.dispatch(pinParticipant(firstSpeakerId));
+                }
+                APP.store.dispatch(setTileView(currentSpeakers.length > 1));
+
+                // APP.conference.sendEndpointMessage('', {
+                //     name: 'SPEAKERS_UPDATED',
+                //     data: {
+                //         visibleIds,
+                //         invisibleIds,
+                //         currentSpeakers
+                //     }
+                // });
             }
         },
         'set-visible-participants': emails => {

@@ -52,6 +52,20 @@ const PARTICIPANT_PROPS_TO_OMIT_WHEN_UPDATE = [
     'pinned'
 ];
 
+ReducerRegistry.register('features/base/speakers', (state = [], action) => {
+    switch (action.type) {
+    case SET_VISIBLE_PARTICIPANTS: {
+        const { currentSpeakers } = action.data;
+
+        return currentSpeakers;
+    }
+    default:
+        break;
+    }
+
+    return state;
+});
+
 /**
  * Listen for actions which add, remove, or update the set of participants in
  * the conference.
@@ -162,13 +176,15 @@ function _participant(state: Object = {}, action) {
     }
 
     case SET_VISIBLE_PARTICIPANTS: {
-        const { visibleIds, invisibleIds } = action.data;
+        const { currentSpeakers } = action.data;
+        const isCurrentSpeaker = currentSpeakers.indexOf(state.email) >= 0;
 
-        if (visibleIds.indexOf(state.id) >= 0) {
-            return set(state, 'visibility', VISIBILITY.VISIBLE);
-        }
-        if (invisibleIds.indexOf(state.id) >= 0) {
+        if (state.visibility === VISIBILITY.VISIBLE && !isCurrentSpeaker) {
             return set(state, 'visibility', VISIBILITY.INVISIBLE);
+        }
+
+        if (state.visibility === VISIBILITY.INVISIBLE && isCurrentSpeaker) {
+            return set(state, 'visibility', VISIBILITY.VISIBLE);
         }
         break;
     }

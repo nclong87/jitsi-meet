@@ -9,6 +9,7 @@ import {
     PARTICIPANT_UPDATED,
     PIN_PARTICIPANT,
     SET_VISIBLE_PARTICIPANTS,
+    getParticipants,
     getParticipantById
 } from '../base/participants';
 import { VISIBILITY } from '../base/participants/constants';
@@ -55,20 +56,23 @@ MiddlewareRegistry.register(store => next => action => {
         break;
 
     case SET_VISIBLE_PARTICIPANTS: {
-        const { visibleIds, invisibleIds } = action.data;
+        const { visibleIds } = action.data;
+        const participants = getParticipants(store.getState());
 
-        invisibleIds.forEach(id => {
-            const participant = getParticipantById(store.getState(), id);
+        participants.forEach(item => {
+            // console.log('item', item);
 
-            VideoLayout.removeParticipantContainer(id, participant.local);
-        });
-        visibleIds.forEach(id => {
-            const participant = getParticipantById(store.getState(), id);
+            // const isCurrentSpeaker = currentSpeakers.indexOf(item.email) >= 0;
 
-            if (participant.local) {
+            if (item.visibility === VISIBILITY.INVISIBLE) {
+                VideoLayout.removeParticipantContainer(item.id, item.local);
+            } else if (visibleIds.indexOf(item.email) >= 0) {
+                if (!item.local) {
+                    VideoLayout.addRemoteParticipantContainer(item);
+                }
+            }
+            if (item.local && item.visibility === VISIBILITY.VISIBLE) {
                 VideoLayout.addLocalParticipantContainer();
-            } else {
-                VideoLayout.addRemoteParticipantContainer(participant);
             }
         });
         break;

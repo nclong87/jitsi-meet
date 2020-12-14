@@ -16,6 +16,8 @@ import {
     createStartSilentEvent,
     createScreenSharingEvent,
     createTrackMutedEvent,
+
+    // createApiEvent,
     sendAnalytics
 } from './react/features/analytics';
 import {
@@ -86,6 +88,8 @@ import {
     participantMutedUs,
     participantPresenceChanged,
     participantRoleChanged,
+
+    // pinParticipant,
     participantUpdated
 } from './react/features/base/participants';
 import {
@@ -2019,6 +2023,8 @@ export default {
                 if (args && args.length >= 2) {
                     const [ sender, eventData ] = args;
 
+                    // console.log('ENDPOINT_MESSAGE_RECEIVED', eventData);
+
                     if (eventData.name === ENDPOINT_TEXT_MESSAGE_NAME) {
                         APP.API.notifyEndpointTextMessageReceived({
                             senderInfo: {
@@ -2028,6 +2034,17 @@ export default {
                             eventData
                         });
                     }
+
+                    // if (eventData.name === 'SPEAKERS_UPDATED') {
+                    //     const { visibleIds, invisibleIds, currentSpeakers } = eventData.data;
+                    //
+                    //     APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
+                    //     if (currentSpeakers.length === 1) {
+                    //         sendAnalytics(createApiEvent('participant.pinned'));
+                    //         APP.store.dispatch(pinParticipant(currentSpeakers[0]));
+                    //     }
+                    //     APP.store.dispatch(setTileView(currentSpeakers.length > 1));
+                    // }
                 }
             });
 

@@ -12,7 +12,7 @@ import {
     JitsiParticipantConnectionStatus
 } from '../../../react/features/base/lib-jitsi-meet';
 import { VIDEO_TYPE } from '../../../react/features/base/media';
-import { getParticipantById, getCurrentSpeakerIds } from '../../../react/features/base/participants';
+import { getParticipantById, getSpeakers } from '../../../react/features/base/participants';
 import { VISIBILITY } from '../../../react/features/base/participants/constants';
 import { CHAT_SIZE } from '../../../react/features/chat';
 import {
@@ -235,7 +235,7 @@ export default class LargeVideoManager {
                                 === JitsiParticipantConnectionStatus.ACTIVE
                         || wasUsersImageCached);
 
-            const hasSpeaker = getCurrentSpeakerIds(APP.store.getState()).length > 0;
+            const hasSpeaker = getSpeakers(APP.store.getState()).length > 0;
             const showAvatar
                 = isVideoContainer
                     && ((APP.conference.isAudioOnly() && videoType !== VIDEO_TYPE.DESKTOP) || !isVideoRenderable)

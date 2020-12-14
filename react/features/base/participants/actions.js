@@ -509,6 +509,7 @@ export function setLoadableAvatarUrl(participantId, url) {
  *
  * @param {Array} visibleIds - The ID of the conference participant to pin or null.
  * @param {Array} invisibleIds - The ID of the conference participant to pin or null.
+ * @param {Array} currentSpeakers - The ID of the conference participant to pin or null.
  * @returns {{
  *     type: PARTICIPANT_UPDATED,
  *     participant: {
@@ -517,12 +518,13 @@ export function setLoadableAvatarUrl(participantId, url) {
  *     }
  * }}
  */
-export function setVisibilityParticipants(visibleIds, invisibleIds) {
-    logger.info('setVisibilityParticipants', visibleIds, invisibleIds);
+export function setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers) {
+    logger.info('setVisibilityParticipants', visibleIds, invisibleIds, currentSpeakers);
 
     return {
         type: SET_VISIBLE_PARTICIPANTS,
         data: {
+            currentSpeakers,
             visibleIds,
             invisibleIds
         }
