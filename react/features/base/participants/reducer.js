@@ -7,6 +7,8 @@ import {
     PARTICIPANT_ID_CHANGED,
     PARTICIPANT_JOINED,
     PARTICIPANT_LEFT,
+    HIDDEN_PARTICIPANT_JOINED,
+    HIDDEN_PARTICIPANT_LEFT,
     PARTICIPANT_UPDATED,
     PIN_PARTICIPANT,
     SET_VISIBLE_PARTICIPANTS,
@@ -51,6 +53,41 @@ const PARTICIPANT_PROPS_TO_OMIT_WHEN_UPDATE = [
     'dominantSpeaker',
     'pinned'
 ];
+
+ReducerRegistry.register('features/base/participants/bots', (state = [], action) => {
+    switch (action.type) {
+    case HIDDEN_PARTICIPANT_JOINED: {
+        const { id, statId, displayName } = action;
+
+        if (statId) {
+            const newState = state.filter(e => e.statId !== statId);
+
+            newState.push({
+                id,
+                statId,
+                displayName
+            });
+
+            return newState;
+        }
+        break;
+    }
+    case HIDDEN_PARTICIPANT_LEFT: {
+        const { id } = action;
+
+        if (id) {
+            const newState = state.filter(e => e.id !== id);
+
+            return newState;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    return state;
+});
 
 ReducerRegistry.register('features/base/speakers', (state = [], action) => {
     switch (action.type) {

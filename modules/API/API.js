@@ -17,9 +17,9 @@ import {
 } from '../../react/features/base/conference';
 import { parseJWTFromURLParams } from '../../react/features/base/jwt';
 import JitsiMeetJS, { JitsiRecordingConstants } from '../../react/features/base/lib-jitsi-meet';
-import { pinParticipant } from '../../react/features/base/participants';
+import { pinParticipant, getJibriBots, getLocalParticipant } from '../../react/features/base/participants';
 import { setVisibilityParticipants } from '../../react/features/base/participants/actions';
-import { VISIBILITY } from '../../react/features/base/participants/constants';
+import { VISIBILITY, PARTICIPANT_ROLE } from '../../react/features/base/participants/constants';
 import {
     processExternalDeviceRequest
 } from '../../react/features/device-selection/functions';
@@ -241,7 +241,12 @@ function initCommands() {
                 logger.debug('participants', participants);
                 let firstSpeakerId = null;
 
-                participants.forEach(({ id, visibility, email }) => {
+                let moderatorId = null;
+
+                participants.forEach(({ id, visibility, email, role }) => {
+                    if (!moderatorId && role === PARTICIPANT_ROLE.MODERATOR) {
+                        moderatorId = id;
+                    }
                     let isVisible = speakerEmails.indexOf(email) >= 0;
                     const isModerator = moderatorEmails.indexOf(email) >= 0;
 
@@ -276,6 +281,35 @@ function initCommands() {
                 }
                 APP.store.dispatch(setTileView(currentSpeakers.length > 1));
 
+                // send data to jibri
+                const localParticipant = getLocalParticipant(APP.store.getState());
+
+                if (!moderatorId && participants.length > 0) {
+                    // select first participant as moderator
+                    moderatorId = participants[0].id;
+                }
+                console.log('localParticipant', localParticipant, moderatorId);
+                if (localParticipant.id === moderatorId) {
+                    const jibriBots = getJibriBots(APP.store.getState());
+
+                    jibriBots.forEach(({ id }) => {
+                        try {
+                            console.log('sendEndpointMessage', id, currentSpeakers);
+                            APP.conference.sendEndpointMessage(id, {
+                                name: 'SPEAKERS_UPDATED',
+                                data: {
+                                    firstSpeakerId,
+                                    visibleIds,
+                                    invisibleIds,
+                                    currentSpeakers
+                                }
+                            });
+                        } catch (err) {
+                            logger.error('Failed sending endpoint text message', err);
+                        }
+                    });
+                }
+
                 // APP.conference.sendEndpointMessage('', {
                 //     name: 'SPEAKERS_UPDATED',
                 //     data: {
@@ -288,49 +322,6 @@ function initCommands() {
         },
         'set-visible-participants': emails => {
             console.log('set-visible-participants ids', emails);
-            const participants = APP.store.getState()['features/base/participants'];
-
-            const visibleIds = [];
-            const invisibleIds = [];
-            const currentSpeakers = [];
-
-            participants.forEach(({ id, visibility, email }) => {
-                const isVisible = emails.indexOf(email) >= 0;
-
-                if (isVisible) {
-                    currentSpeakers.push(id);
-                }
-                if (visibility === VISIBILITY.VISIBLE) {
-                    if (!isVisible) {
-                        invisibleIds.push(id);
-                    }
-                } else if (visibility === VISIBILITY.INVISIBLE) {
-                    if (isVisible) {
-                        visibleIds.push(id);
-                    }
-                }
-            });
-            APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
-
-            // sendAnalytics(createApiEvent('participant.pinned'));
-            // if (currentSpeakers.length === 1) {
-            //     APP.store.dispatch(pinParticipant(currentSpeakers[0]));
-            // } else {
-            //     APP.store.dispatch(pinParticipant(null));
-            // }
-            setTimeout(() => {
-                APP.store.dispatch(setTileView(currentSpeakers.length > 1));
-                if (currentSpeakers.length === 1) {
-                    sendAnalytics(createApiEvent('participant.pinned'));
-                    APP.store.dispatch(pinParticipant(currentSpeakers[0]));
-                }
-            }, 300);
-
-            // const visibleIds = participants
-            //     .filter(participant => participant.visibility === VISIBILITY.VISIBLE)
-            //     .map(participant => participant.id);
-            //
-            // console.log('set-visible-participants visibleIds', visibleIds);
         },
 
         /**
@@ -1139,6 +1130,23 @@ class API {
         this._sendEvent({
             name: 'local-storage-changed',
             localStorageContent
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that recording has started or stopped.
+     *
+     * @param {boolean} on - True if recording is on, false otherwise.
+     * @param {string} mode - Stream or file.
+     * @param {string} error - Error type or null if success.
+     * @returns {void}
+     */
+    notifyRecordingStatusChanged(on: boolean, mode: string, error?: string) {
+        this._sendEvent({
+            name: 'recording-status-changed',
+            on,
+            mode,
+            error
         });
     }
 

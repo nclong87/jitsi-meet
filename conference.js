@@ -16,8 +16,7 @@ import {
     createStartSilentEvent,
     createScreenSharingEvent,
     createTrackMutedEvent,
-
-    // createApiEvent,
+    createApiEvent,
     sendAnalytics
 } from './react/features/analytics';
 import {
@@ -88,10 +87,10 @@ import {
     participantMutedUs,
     participantPresenceChanged,
     participantRoleChanged,
-
-    // pinParticipant,
+    pinParticipant,
     participantUpdated
 } from './react/features/base/participants';
+import { setVisibilityParticipants } from './react/features/base/participants/actions';
 import {
     getUserSelectedCameraDeviceId,
     updateSettings
@@ -131,6 +130,7 @@ import { setSharedVideoStatus } from './react/features/shared-video';
 import { AudioMixerEffect } from './react/features/stream-effects/audio-mixer/AudioMixerEffect';
 import { createPresenterEffect } from './react/features/stream-effects/presenter';
 import { endpointMessageReceived } from './react/features/subtitles';
+import { setTileView } from './react/features/video-layout';
 import UIEvents from './service/UI/UIEvents';
 import * as RemoteControlEvents
     from './service/remotecontrol/RemoteControlEvents';
@@ -1864,7 +1864,6 @@ export default {
         room.on(JitsiConferenceEvents.USER_JOINED, (id, user) => {
             // The logic shared between RN and web.
             commonUserJoinedHandling(APP.store, room, user);
-            console.log('User Joined', user);
 
             if (user.isHidden()) {
                 return;
@@ -2036,16 +2035,16 @@ export default {
                         });
                     }
 
-                    // if (eventData.name === 'SPEAKERS_UPDATED') {
-                    //     const { visibleIds, invisibleIds, currentSpeakers } = eventData.data;
-                    //
-                    //     APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
-                    //     if (currentSpeakers.length === 1) {
-                    //         sendAnalytics(createApiEvent('participant.pinned'));
-                    //         APP.store.dispatch(pinParticipant(currentSpeakers[0]));
-                    //     }
-                    //     APP.store.dispatch(setTileView(currentSpeakers.length > 1));
-                    // }
+                    if (eventData.name === 'SPEAKERS_UPDATED') {
+                        const { firstSpeakerId, visibleIds, invisibleIds, currentSpeakers } = eventData.data;
+
+                        APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
+                        if (currentSpeakers.length === 1) {
+                            sendAnalytics(createApiEvent('participant.pinned'));
+                            APP.store.dispatch(pinParticipant(firstSpeakerId));
+                        }
+                        APP.store.dispatch(setTileView(currentSpeakers.length > 1));
+                    }
                 }
             });
 

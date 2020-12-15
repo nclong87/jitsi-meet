@@ -10,7 +10,7 @@ import { JitsiTrackEvents } from '../../../react/features/base/lib-jitsi-meet';
 import { VideoTrack } from '../../../react/features/base/media';
 import { updateSettings } from '../../../react/features/base/settings';
 import { getLocalVideoTrack } from '../../../react/features/base/tracks';
-import { shouldDisplayTileView } from '../../../react/features/video-layout';
+import { shouldDisplayTileView, LAYOUTS } from '../../../react/features/video-layout';
 /* eslint-enable no-unused-vars */
 import UIEvents from '../../../service/UI/UIEvents';
 
@@ -35,7 +35,7 @@ export default class LocalVideo extends SmallVideo {
         this.container = this.createContainer();
         this.$container = $(this.container);
         this.isLocal = true;
-        this._setThumbnailSize();
+        this._setThumbnailSize(LAYOUTS.TILE_VIEW);
         this.updateDOMLocation();
 
         this.localVideoId = null;

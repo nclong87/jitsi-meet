@@ -92,6 +92,7 @@ const events = {
     'dominant-speaker-changed': 'dominantSpeakerChanged',
     'subject-change': 'subjectChange',
     'suspend-detected': 'suspendDetected',
+    'recording-status-changed': 'recordingStatusChanged',
     'tile-view-changed': 'tileViewChanged'
 };
 

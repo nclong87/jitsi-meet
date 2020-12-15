@@ -69,7 +69,7 @@ export function commonUserJoinedHandling(
     const displayName = user.getDisplayName();
 
     if (user.isHidden()) {
-        dispatch(hiddenParticipantJoined(id, displayName));
+        dispatch(hiddenParticipantJoined(id, displayName, user.getStatsID === undefined ? null : user.getStatsID()));
     } else {
         dispatch(participantJoined({
             botType: user.getBotType(),

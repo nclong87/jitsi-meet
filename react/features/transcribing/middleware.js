@@ -38,7 +38,6 @@ MiddlewareRegistry.register(store => next => action => {
         store.dispatch(showStoppedTranscribingNotification());
         break;
     case HIDDEN_PARTICIPANT_JOINED: {
-        console.log('HIDDEN_PARTICIPANT_JOINED', action);
         if (action.displayName
                 && action.displayName === TRANSCRIBER_DISPLAY_NAME) {
             store.dispatch(transcriberJoined(action.id));

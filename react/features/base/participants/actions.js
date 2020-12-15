@@ -286,17 +286,19 @@ export function participantJoined(participant) {
  * @param {string} id - The id of the participant.
  * @param {string} displayName - The display name, or undefined when
  * unknown.
+  * @param {string} statId - The state ID.
  * @returns {{
  *     type: HIDDEN_PARTICIPANT_JOINED,
  *     displayName: string,
  *     id: string
  * }}
  */
-export function hiddenParticipantJoined(id, displayName) {
+export function hiddenParticipantJoined(id, displayName, statId = null) {
     return {
         type: HIDDEN_PARTICIPANT_JOINED,
         id,
-        displayName
+        displayName,
+        statId
     };
 }
 

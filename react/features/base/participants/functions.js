@@ -279,6 +279,39 @@ export function getSpeakers(stateful) {
 }
 
 /**
+ * Returns array of bots from Redux state.
+ *
+ * @param {(Function|Object|Participant[])} stateful - The redux state
+ * features/base/participants, the (whole) redux state, or redux's
+ * {@code getState} function to be used to retrieve the state
+ * features/base/participants.
+ * @private
+ * @returns {Participant[]}
+ */
+export function getBots(stateful) {
+    return (
+        Array.isArray(stateful)
+            ? stateful
+            : toState(stateful)['features/base/participants/bots'] || []);
+}
+
+/**
+ * Returns array of jibri bots from Redux state.
+ *
+ * @param {(Function|Object|Participant[])} stateful - The redux state
+ * features/base/participants, the (whole) redux state, or redux's
+ * {@code getState} function to be used to retrieve the state
+ * features/base/participants.
+ * @private
+ * @returns {Participant[]}
+ */
+export function getJibriBots(stateful) {
+    const bots = getBots(stateful);
+
+    return bots.filter(e => e.statId === 'jibri');
+}
+
+/**
  * Returns the youtube fake participant.
  * At the moment it is considered the youtube participant the only fake participant in the list.
  *
