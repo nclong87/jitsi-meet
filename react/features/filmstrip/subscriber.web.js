@@ -11,11 +11,11 @@ import { setHorizontalViewDimensions, setTileViewDimensions } from './actions.we
  * Listens for changes in the number of participants to calculate the dimensions of the tile view grid and the tiles.
  */
 StateListenerRegistry.register(
-    /* selector */ state => state['features/base/participants'].length,
+    /* selector */ state => state['features/base/speakers'].length,
     /* listener */ (numberOfParticipants, store) => {
         const state = store.getState();
 
-        if (shouldDisplayTileView(state)) {
+        if (state['features/base/speakers'].length > 1) {
             const gridDimensions = getTileViewGridDimensions(state);
             const oldGridDimensions = state['features/filmstrip'].tileViewDimensions.gridDimensions;
             const { clientHeight, clientWidth } = state['features/base/responsive-ui'];

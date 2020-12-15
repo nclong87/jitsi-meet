@@ -50,8 +50,8 @@ export function getMaxColumnCount() {
 export function getTileViewGridDimensions(state: Object, maxColumns: number = getMaxColumnCount()) {
     // When in tile view mode, we must discount ourselves (the local participant) because our
     // tile is not visible.
-    const { iAmRecorder } = state['features/base/config'];
-    const numberOfParticipants = state['features/base/participants'].length - (iAmRecorder ? 1 : 0);
+    // const { iAmRecorder } = state['features/base/config'];
+    const numberOfParticipants = state['features/base/speakers'].length;
 
     const columnsToMaintainASquare = Math.ceil(Math.sqrt(numberOfParticipants));
     const columns = Math.min(columnsToMaintainASquare, maxColumns);

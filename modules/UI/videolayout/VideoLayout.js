@@ -81,10 +81,6 @@ const VideoLayout = {
             emitter,
             this._updateLargeVideoIfDisplayed.bind(this));
 
-        // if (localParticipant.visibility === VISIBILITY.INVISIBLE) {
-        //     localVideoThumbnail.setVisible(false);
-        // }
-
         this.registerListeners();
     },
 
@@ -285,7 +281,7 @@ const VideoLayout = {
     showLocalParticipantContainer() {
         if (localVideoThumbnail) {
             // localVideoThumbnail._setThumbnailSize(LAYOUTS.TILE_VIEW);
-            localVideoThumbnail.setVisible(true);
+            localVideoThumbnail.show();
             const state = APP.store.getState();
             const numSpeakers = getSpeakers(state).length;
 
@@ -303,7 +299,7 @@ const VideoLayout = {
      */
     hideLocalParticipantContainer() {
         logger.info('Removing local video');
-        localVideoThumbnail && localVideoThumbnail.setVisible(false);
+        localVideoThumbnail && localVideoThumbnail.hide();
     },
 
     /**
