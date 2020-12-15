@@ -1864,6 +1864,7 @@ export default {
         room.on(JitsiConferenceEvents.USER_JOINED, (id, user) => {
             // The logic shared between RN and web.
             commonUserJoinedHandling(APP.store, room, user);
+            console.log('User Joined', user);
 
             if (user.isHidden()) {
                 return;

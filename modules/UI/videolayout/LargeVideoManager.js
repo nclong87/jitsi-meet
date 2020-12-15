@@ -304,9 +304,9 @@ export default class LargeVideoManager {
      * otherwise
      */
     setAvatarVisible(visible) {
+        logger.info('setAvatarVisible', visible);
         const container = this.getCurrentContainer();
 
-        console.log('setAvatarVisible', visible);
         container.showAvatar(visible);
     }
 

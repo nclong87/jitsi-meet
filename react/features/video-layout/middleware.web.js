@@ -44,13 +44,14 @@ MiddlewareRegistry.register(store => next => action => {
         VideoLayout.reset();
         break;
 
-    case PARTICIPANT_JOINED:
+    case PARTICIPANT_JOINED: {
+        console.log('PARTICIPANT_JOINED', action);
         if (!action.participant.local && action.participant?.visibility === VISIBILITY.VISIBLE) {
             VideoLayout.addRemoteParticipantContainer(
                 getParticipantById(store.getState(), action.participant.id));
         }
         break;
-
+    }
     case PARTICIPANT_LEFT:
         VideoLayout.removeParticipantContainer(action.participant.id);
         break;

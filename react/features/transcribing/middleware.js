@@ -37,7 +37,8 @@ MiddlewareRegistry.register(store => next => action => {
     case _TRANSCRIBER_LEFT:
         store.dispatch(showStoppedTranscribingNotification());
         break;
-    case HIDDEN_PARTICIPANT_JOINED:
+    case HIDDEN_PARTICIPANT_JOINED: {
+        console.log('HIDDEN_PARTICIPANT_JOINED', action);
         if (action.displayName
                 && action.displayName === TRANSCRIBER_DISPLAY_NAME) {
             store.dispatch(transcriberJoined(action.id));
@@ -46,6 +47,7 @@ MiddlewareRegistry.register(store => next => action => {
         }
 
         break;
+    }
     case HIDDEN_PARTICIPANT_LEFT:
         if (action.id === transcriberJID) {
             store.dispatch(transcriberLeft(action.id));

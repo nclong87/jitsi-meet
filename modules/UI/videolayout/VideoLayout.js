@@ -10,8 +10,8 @@ import {
     getSpeakers,
     pinParticipant
 } from '../../../react/features/base/participants';
-import { VISIBILITY } from '../../../react/features/base/participants/constants';
 import { getTrackByMediaTypeAndParticipant } from '../../../react/features/base/tracks';
+import { LAYOUTS } from '../../../react/features/video-layout';
 import UIEvents from '../../../service/UI/UIEvents';
 import { SHARED_VIDEO_CONTAINER_TYPE } from '../shared_video/SharedVideo';
 import SharedVideoThumb from '../shared_video/SharedVideoThumb';
@@ -25,7 +25,8 @@ const logger = Logger.getLogger(__filename);
 
 const remoteVideos = {};
 let localVideoThumbnail = null;
-let localParticipant = null;
+
+// let localParticipant = null;
 
 let eventEmitter = null;
 
@@ -73,16 +74,17 @@ function getLocalParticipant() {
 const VideoLayout = {
     init(emitter) {
         eventEmitter = emitter;
-        localParticipant = getLocalParticipant();
+
+        // localParticipant = getLocalParticipant();
 
         localVideoThumbnail = new LocalVideo(
             VideoLayout,
             emitter,
             this._updateLargeVideoIfDisplayed.bind(this));
 
-        if (localParticipant.visibility === VISIBILITY.INVISIBLE) {
-            localVideoThumbnail.setVisible(false);
-        }
+        // if (localParticipant.visibility === VISIBILITY.INVISIBLE) {
+        //     localVideoThumbnail.setVisible(false);
+        // }
 
         this.registerListeners();
     },
@@ -278,6 +280,7 @@ const VideoLayout = {
 
     addLocalParticipantContainer() {
         if (localVideoThumbnail) {
+            localVideoThumbnail._setThumbnailSize(LAYOUTS.TILE_VIEW);
             localVideoThumbnail.setVisible(true);
             const state = APP.store.getState();
             const numSpeakers = getSpeakers(state).length;
@@ -297,6 +300,7 @@ const VideoLayout = {
      * @returns {void}
      */
     addRemoteParticipantContainer(participant) {
+        logger.debug('addRemoteParticipantContainer', participant);
         if (!participant || participant.local) {
             return;
         } else if (participant.isFakeParticipant) {
@@ -344,12 +348,25 @@ const VideoLayout = {
         this._updateLargeVideoIfDisplayed(resourceJid, true);
     },
 
-    onTrackUpdated(jitsiTrack) {
-        const isVideoTrack = jitsiTrack.type !== MEDIA_TYPE.AUDIO;
+    onTrackUpdated(stream) {
+        const id = stream.getParticipantId();
 
-        // const muted = jitsiTrack.isMuted();
+        const remoteVideo = remoteVideos[id];
 
-        console.log('jitsiTrack', jitsiTrack);
+        logger.debug(`Received a new ${stream.getType()} stream for ${id}`);
+
+        if (remoteVideo) {
+            const muted = stream.isMuted();
+
+            if (!muted && (!remoteVideo.videoStream || !remoteVideo.audioStream)) {
+                logger.info('addRemoteStreamElement', id);
+                remoteVideo.addRemoteStreamElement(stream);
+                this.onVideoMute(id);
+                remoteVideo.updateView();
+            }
+        }
+
+        const isVideoTrack = stream.type !== MEDIA_TYPE.AUDIO;
 
         if (!isVideoTrack) {
             const state = APP.store.getState();
@@ -357,11 +374,7 @@ const VideoLayout = {
 
             logger.info('numSpeakers', numSpeakers);
 
-            if (numSpeakers === 0) {
-                largeVideo && largeVideo.setAvatarVisible(false);
-            }
-
-            // largeVideo.setAvatarVisible(numSpeakers > 0);
+            largeVideo && largeVideo.setAvatarVisible(numSpeakers > 0);
         }
 
         // const state = APP.store.getState();
