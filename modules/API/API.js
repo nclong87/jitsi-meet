@@ -224,8 +224,6 @@ function initCommands() {
         'set-room-data': data => {
             logger.info('set-room-data', data);
             const { isCamOn, isMicOn, speakerEmails, isOpenAll } = data;
-            const visibleIds = [];
-            const invisibleIds = [];
             const currentSpeakers = [];
 
             if (isMicOn !== undefined) {
@@ -264,17 +262,8 @@ function initCommands() {
                         }
                         currentSpeakers.push(email);
                     }
-                    if (visibility === VISIBILITY.VISIBLE) {
-                        if (isVisible === false) {
-                            invisibleIds.push(email);
-                        }
-                    } else if (visibility === VISIBILITY.INVISIBLE) {
-                        if (isVisible === true) {
-                            visibleIds.push(email);
-                        }
-                    }
                 });
-                APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
+                APP.store.dispatch(setVisibilityParticipants(currentSpeakers));
                 if (currentSpeakers.length === 1) {
                     sendAnalytics(createApiEvent('participant.pinned'));
                     APP.store.dispatch(pinParticipant(firstSpeakerId));
@@ -299,8 +288,6 @@ function initCommands() {
                                 name: 'SPEAKERS_UPDATED',
                                 data: {
                                     firstSpeakerId,
-                                    visibleIds,
-                                    invisibleIds,
                                     currentSpeakers
                                 }
                             });

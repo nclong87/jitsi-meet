@@ -2036,9 +2036,9 @@ export default {
                     }
 
                     if (eventData.name === 'SPEAKERS_UPDATED') {
-                        const { firstSpeakerId, visibleIds, invisibleIds, currentSpeakers } = eventData.data;
+                        const { firstSpeakerId, currentSpeakers } = eventData.data;
 
-                        APP.store.dispatch(setVisibilityParticipants(visibleIds, invisibleIds, currentSpeakers));
+                        APP.store.dispatch(setVisibilityParticipants(currentSpeakers));
                         if (currentSpeakers.length === 1) {
                             sendAnalytics(createApiEvent('participant.pinned'));
                             APP.store.dispatch(pinParticipant(firstSpeakerId));

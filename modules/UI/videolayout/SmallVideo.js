@@ -794,12 +794,9 @@ export default class SmallVideo {
     /**
      * Sets the size of the thumbnail.
      */
-    _setThumbnailSize(_layout = null) {
-        const layout = _layout === null ? getCurrentLayout(APP.store.getState()) : _layout;
+    _setThumbnailSize() {
+        const layout = getCurrentLayout(APP.store.getState());
 
-        if (this.isLocal) {
-            logger.log('LocalVideo setThumbnailSize', layout);
-        }
         const heightToWidthPercent = 100
                 / (this.isLocal ? interfaceConfig.LOCAL_THUMBNAIL_RATIO : interfaceConfig.REMOTE_THUMBNAIL_RATIO);
 

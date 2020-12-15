@@ -1,5 +1,8 @@
 // @flow
 
+// import _groupBy from 'lodash/groupBy';
+// import _remove from 'lodash/remove';
+
 import VideoLayout from '../../../modules/UI/videolayout/VideoLayout.js';
 import { CONFERENCE_JOINED, CONFERENCE_WILL_LEAVE } from '../base/conference';
 import {
@@ -56,23 +59,36 @@ MiddlewareRegistry.register(store => next => action => {
         break;
 
     case SET_VISIBLE_PARTICIPANTS: {
-        const { visibleIds } = action.data;
+        const { currentSpeakers } = action.data;
         const participants = getParticipants(store.getState());
 
         participants.forEach(item => {
             // console.log('item', item);
 
-            // const isCurrentSpeaker = currentSpeakers.indexOf(item.email) >= 0;
+            const isCurrentSpeaker = currentSpeakers.indexOf(item.email) >= 0;
 
-            if (item.visibility === VISIBILITY.INVISIBLE) {
-                VideoLayout.removeParticipantContainer(item.id, item.local);
-            } else if (visibleIds.indexOf(item.email) >= 0) {
-                if (!item.local) {
+            if (item.local) {
+                if (item.visibility === VISIBILITY.VISIBLE) {
+                    VideoLayout.showLocalParticipantContainer();
+                } else {
+                    VideoLayout.hideLocalParticipantContainer();
+                }
+
+                return;
+            }
+
+            if (item.visibility === VISIBILITY.INVISIBLE || !isCurrentSpeaker) {
+                VideoLayout.removeParticipantContainer(item.id);
+
+                return;
+            }
+
+            if (item.visibility === VISIBILITY.VISIBLE || isCurrentSpeaker) {
+                const smallVideo = VideoLayout.getSmallVideo(item.id);
+
+                if (!smallVideo || smallVideo === undefined) {
                     VideoLayout.addRemoteParticipantContainer(item);
                 }
-            }
-            if (item.local && item.visibility === VISIBILITY.VISIBLE) {
-                VideoLayout.addLocalParticipantContainer();
             }
         });
         break;

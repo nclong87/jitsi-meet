@@ -11,7 +11,6 @@ import {
     pinParticipant
 } from '../../../react/features/base/participants';
 import { getTrackByMediaTypeAndParticipant } from '../../../react/features/base/tracks';
-import { LAYOUTS } from '../../../react/features/video-layout';
 import UIEvents from '../../../service/UI/UIEvents';
 import { SHARED_VIDEO_CONTAINER_TYPE } from '../shared_video/SharedVideo';
 import SharedVideoThumb from '../shared_video/SharedVideoThumb';
@@ -278,9 +277,14 @@ const VideoLayout = {
             thumbnail.focus(pinnedParticipantID === thumbnail.getId()));
     },
 
-    addLocalParticipantContainer() {
+    /**
+     * To show local video.
+     *
+     * @returns {void}
+     */
+    showLocalParticipantContainer() {
         if (localVideoThumbnail) {
-            localVideoThumbnail._setThumbnailSize(LAYOUTS.TILE_VIEW);
+            // localVideoThumbnail._setThumbnailSize(LAYOUTS.TILE_VIEW);
             localVideoThumbnail.setVisible(true);
             const state = APP.store.getState();
             const numSpeakers = getSpeakers(state).length;
@@ -290,6 +294,16 @@ const VideoLayout = {
                 largeVideo.setVisible(true);
             }
         }
+    },
+
+    /**
+     * To hide local video.
+     *
+     * @returns {void}
+     */
+    hideLocalParticipantContainer() {
+        logger.info('Removing local video');
+        localVideoThumbnail && localVideoThumbnail.setVisible(false);
     },
 
     /**
@@ -500,18 +514,11 @@ const VideoLayout = {
         localVideoThumbnail && localVideoThumbnail.removeConnectionIndicator();
     },
 
-    removeParticipantContainer(id, isLocal = false) {
+    removeParticipantContainer(id) {
         // Unlock large video
         if (this.getPinnedId() === id) {
             logger.info('Focused video owner has left the conference');
             APP.store.dispatch(pinParticipant(null));
-        }
-
-        if (isLocal) {
-            logger.info(`Removing local video: ${id}`);
-            localVideoThumbnail && localVideoThumbnail.setVisible(false);
-
-            return;
         }
 
         const remoteVideo = remoteVideos[id];
