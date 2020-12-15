@@ -16,6 +16,7 @@ import {
     signIn,
     updateProfile
 } from '../../../../google-api';
+import { setLiveStreamKey } from '../../../actions';
 import AbstractStartLiveStreamDialog, {
     _mapStateToProps as _abstractMapStateToProps,
     type Props as AbstractProps
@@ -52,6 +53,7 @@ class StartLiveStreamDialog
         super(props);
 
         // Bind event handlers so they are only bound once per instance.
+        this._onStreamKeyChangeWeb = this._onStreamKeyChangeWeb.bind(this);
         this._onGetYouTubeBroadcasts = this._onGetYouTubeBroadcasts.bind(this);
         this._onInitializeGoogleApi = this._onInitializeGoogleApi.bind(this);
         this._onGoogleSignIn = this._onGoogleSignIn.bind(this);
@@ -95,7 +97,7 @@ class StartLiveStreamDialog
                     { _googleApiApplicationClientID
                         ? this._renderYouTubePanel() : null }
                     <StreamKeyForm
-                        onChange = { this._onStreamKeyChange }
+                        onChange = { this._onStreamKeyChangeWeb }
                         value = {
                             this.state.streamKey || this.props._streamKey
                         } />
@@ -198,6 +200,18 @@ class StartLiveStreamDialog
                     errorType: undefined
                 }))
             .then(() => this._onGetYouTubeBroadcasts());
+    }
+
+    /**
+     * Callback to handle stream key changes.
+     *
+     * @private
+     * @param {string} streamKey - The new key value.
+     * @returns {void}
+     */
+    _onStreamKeyChangeWeb(streamKey) {
+        this.props.dispatch(setLiveStreamKey(streamKey));
+        this._onStreamKeyChange(streamKey);
     }
 
     _onStreamKeyChange: string => void;

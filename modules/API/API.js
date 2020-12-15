@@ -33,6 +33,7 @@ import {
     selectParticipantInLargeVideo
 } from '../../react/features/large-video/actions';
 import { toggleLobbyMode } from '../../react/features/lobby/actions.web';
+import { setLiveStreamKey } from '../../react/features/recording/actions';
 import { RECORDING_TYPES } from '../../react/features/recording/constants';
 import { getActiveSession } from '../../react/features/recording/functions';
 import { muteAllParticipants } from '../../react/features/remote-video-menu/actions';
@@ -277,13 +278,13 @@ function initCommands() {
                     // select first participant as moderator
                     moderatorId = participants[0].id;
                 }
-                console.log('localParticipant', localParticipant, moderatorId);
+                logger.debug('localParticipant', localParticipant, moderatorId);
                 if (localParticipant.id === moderatorId) {
                     const jibriBots = getJibriBots(APP.store.getState());
 
                     jibriBots.forEach(({ id }) => {
                         try {
-                            console.log('sendEndpointMessage', id, currentSpeakers);
+                            logger.log('sendEndpointMessage to Jibri', id, currentSpeakers);
                             APP.conference.sendEndpointMessage(id, {
                                 name: 'SPEAKERS_UPDATED',
                                 data: {
@@ -390,6 +391,7 @@ function initCommands() {
                     mode: JitsiRecordingConstants.mode.STREAM,
                     streamId: youtubeStreamKey || rtmpStreamKey
                 };
+                APP.store.dispatch(setLiveStreamKey(recordingConfig.streamId));
             } else {
                 logger.error('Invalid recording mode provided');
 
