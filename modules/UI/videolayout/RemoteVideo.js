@@ -393,6 +393,25 @@ export default class RemoteVideo extends SmallVideo {
     }
 
     /**
+     * Update tracks
+     * @param {*} tracks
+     */
+    updateTracks(tracks) {
+        tracks.forEach(track => {
+            const isVideo = track.isVideoTrack();
+
+            if (isVideo && !this.videoStream) {
+                this.addRemoteStreamElement(track);
+            }
+            if (!isVideo && !this.audioStream) {
+                this.addRemoteStreamElement(track);
+            }
+
+            // this.addRemoteStreamElement(track);
+        });
+    }
+
+    /**
      *
      * @param {*} stream
      */

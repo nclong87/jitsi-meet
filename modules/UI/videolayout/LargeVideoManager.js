@@ -235,11 +235,9 @@ export default class LargeVideoManager {
                                 === JitsiParticipantConnectionStatus.ACTIVE
                         || wasUsersImageCached);
 
-            const hasSpeaker = getSpeakers(APP.store.getState()).length > 0;
             const showAvatar
                 = isVideoContainer
-                    && ((APP.conference.isAudioOnly() && videoType !== VIDEO_TYPE.DESKTOP) || !isVideoRenderable)
-                    && hasSpeaker;
+                    && ((APP.conference.isAudioOnly() && videoType !== VIDEO_TYPE.DESKTOP) || !isVideoRenderable);
 
             let promise;
 
@@ -278,12 +276,6 @@ export default class LargeVideoManager {
             this.updatePresenceLabel(id);
 
             this.videoContainer.positionRemoteStatusMessages();
-
-            if (hasSpeaker) {
-                this.videoContainer.show();
-            } else {
-                this.videoContainer.hide();
-            }
 
             // resolve updateLargeVideo promise after everything is done
             promise.then(resolve);

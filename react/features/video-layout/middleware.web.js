@@ -84,11 +84,7 @@ MiddlewareRegistry.register(store => next => action => {
             }
 
             if (item.visibility === VISIBILITY.VISIBLE || isCurrentSpeaker) {
-                const smallVideo = VideoLayout.getSmallVideo(item.id);
-
-                if (!smallVideo || smallVideo === undefined) {
-                    VideoLayout.addRemoteParticipantContainer(item);
-                }
+                VideoLayout.addRemoteParticipantContainer(item);
             }
         });
         break;

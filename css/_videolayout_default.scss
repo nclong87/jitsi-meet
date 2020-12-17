@@ -36,6 +36,12 @@
     position: relative;
     text-align: center;
 
+    &.no-speaker {
+        #dominantSpeaker {
+            display: none;
+        }
+    }
+
     &__background {
         @include topLeft();
         background-color: black;
