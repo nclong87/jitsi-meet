@@ -93,6 +93,7 @@ const events = {
     'subject-change': 'subjectChange',
     'suspend-detected': 'suspendDetected',
     'recording-status-changed': 'recordingStatusChanged',
+    'data-channel-opened': 'dataChannelOpened',
     'tile-view-changed': 'tileViewChanged'
 };
 
@@ -297,6 +298,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
         this._participants = {};
         this._myUserID = undefined;
         this._onStageParticipant = undefined;
+        this._isDataChannelOpened = false;
         this._setupListeners();
         id++;
     }
@@ -525,6 +527,9 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
             case 'video-quality-changed':
                 this._videoQuality = data.videoQuality;
                 break;
+            case 'data-channel-opened':
+                this._isDataChannelOpened = true;
+                break;
             case 'local-storage-changed':
                 jitsiLocalStorage.setItem('jitsiLocalStorage', data.localStorageContent);
 
@@ -750,6 +755,15 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
         });
 
         return participantsInfo;
+    }
+
+    /**
+     * Returns data channel opened or not.
+     *
+     * @returns {bool}
+     */
+    isDataChannelOpened() {
+        return this._isDataChannelOpened;
     }
 
     /**

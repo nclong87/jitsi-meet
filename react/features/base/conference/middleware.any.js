@@ -30,6 +30,7 @@ import {
     CONFERENCE_WILL_LEAVE,
     SEND_TONES,
     SET_PENDING_SUBJECT_CHANGE,
+    DATA_CHANNEL_OPENED,
     SET_ROOM
 } from './actionTypes';
 import {
@@ -95,6 +96,10 @@ MiddlewareRegistry.register(store => next => action => {
     case TRACK_ADDED:
     case TRACK_REMOVED:
         return _trackAddedOrRemoved(store, next, action);
+
+    case DATA_CHANNEL_OPENED:
+        APP.API.notifyDataChannelOpened();
+        break;
     }
 
     return next(action);

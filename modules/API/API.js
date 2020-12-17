@@ -1140,6 +1140,17 @@ class API {
     }
 
     /**
+     * Notify external application (if API is enabled) that recording has started or stopped.
+     *
+     * @returns {void}
+     */
+    notifyDataChannelOpened() {
+        this._sendEvent({
+            name: 'data-channel-opened'
+        });
+    }
+
+    /**
      * Disposes the allocated resources.
      *
      * @returns {void}
