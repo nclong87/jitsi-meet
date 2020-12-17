@@ -163,6 +163,7 @@ UI.start = function() {
         // in case of iAmSipGateway keep local video visible
         if (!config.iAmSipGateway) {
             VideoLayout.setLocalVideoVisible(false);
+            APP.store.dispatch(setFilmstripVisible(false));
             APP.store.dispatch(setNotificationsEnabled(false));
         }
 

@@ -326,7 +326,16 @@ const VideoLayout = {
 
         const id = participant.id;
         const jitsiParticipant = APP.conference.getParticipantById(id);
-        const remoteVideo = new RemoteVideo(jitsiParticipant, VideoLayout);
+        let remoteVideo = this.getSmallVideo(id);
+
+        logger.debug('jitsiParticipant', jitsiParticipant);
+        if (!remoteVideo || remoteVideo === undefined) {
+            remoteVideo = new RemoteVideo(jitsiParticipant, VideoLayout);
+        }
+        logger.debug('remoteVideo', remoteVideo);
+        if (!remoteVideo.videoStream || !remoteVideo.audioStream) {
+            remoteVideo.updateTracks(jitsiParticipant.getTracks());
+        }
 
         this._setRemoteControlProperties(jitsiParticipant, remoteVideo);
         this.addRemoteVideoContainer(id, remoteVideo);

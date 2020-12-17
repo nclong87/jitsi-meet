@@ -1,4 +1,5 @@
 // @flow
+/* global config */
 
 import _ from 'lodash';
 import React from 'react';
@@ -196,7 +197,7 @@ class Conference extends AbstractConference<Props, *> {
                     { hideLabels || <Labels /> }
                 </div>
 
-                { _showPrejoin || _isLobbyScreenVisible || <Toolbox /> }
+                { config.iAmRecorder || _showPrejoin || _isLobbyScreenVisible || <Toolbox /> }
                 <Chat />
 
                 { this.renderNotificationsContainer() }
