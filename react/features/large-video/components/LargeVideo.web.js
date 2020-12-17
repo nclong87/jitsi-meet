@@ -31,6 +31,11 @@ type Props = {
     _isChatOpen: boolean,
 
     /**
+     * Prop that indicates any speakers in meeting or not.
+     */
+    _hasSpeaker: boolean,
+
+    /**
      * Used to determine the value of the autoplay attribute of the underlying
      * video element.
      */
@@ -60,8 +65,9 @@ class LargeVideo extends Component<Props> {
      * @returns {React$Element}
      */
     render() {
+        const { _isChatOpen, _hasSpeaker } = this.props;
         const style = this._getCustomSyles();
-        const className = `videocontainer${this.props._isChatOpen ? ' shift-right' : ''}`;
+        const className = `videocontainer${_isChatOpen ? ' shift-right' : ''}${_hasSpeaker ? '' : ' no-speaker'}`;
 
         return (
             <div
@@ -135,10 +141,12 @@ class LargeVideo extends Component<Props> {
  */
 function _mapStateToProps(state) {
     const testingConfig = state['features/base/config'].testing;
+    const speakers = state['features/base/speakers'];
     const { backgroundColor, backgroundImageUrl } = state['features/dynamic-branding'];
     const { isOpen: isChatOpen } = state['features/chat'];
 
     return {
+        _hasSpeaker: speakers.length > 0,
         _customBackgroundColor: backgroundColor,
         _customBackgroundImageUrl: backgroundImageUrl,
         _isChatOpen: isChatOpen,

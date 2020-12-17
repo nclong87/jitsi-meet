@@ -385,17 +385,6 @@ const VideoLayout = {
             }
         }
 
-        const isVideoTrack = stream.type !== MEDIA_TYPE.AUDIO;
-
-        if (!isVideoTrack) {
-            const state = APP.store.getState();
-            const numSpeakers = getSpeakers(state).length;
-
-            logger.info('numSpeakers', numSpeakers);
-
-            largeVideo && largeVideo.setAvatarVisible(numSpeakers > 0);
-        }
-
         // const state = APP.store.getState();
         // const numSpeakers = getCurrentSpeakerIds(state).length;
         //
