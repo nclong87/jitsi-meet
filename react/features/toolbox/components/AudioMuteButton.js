@@ -125,6 +125,7 @@ class AudioMuteButton extends AbstractAudioMuteButton<Props, *> {
      */
     _setAudioMuted(audioMuted: boolean) {
         this.props.dispatch(muteLocal(audioMuted));
+        APP.API.notifyAudioMutedStatusChanged(audioMuted, true);
     }
 
     /**

@@ -880,12 +880,14 @@ class API {
      * changed.
      *
      * @param {boolean} muted - The new muted status.
+     * @param {boolean} changedByUser - This value changed by user or system.
      * @returns {void}
      */
-    notifyAudioMutedStatusChanged(muted: boolean) {
+    notifyAudioMutedStatusChanged(muted: boolean, changedByUser = false) {
         this._sendEvent({
             name: 'audio-mute-status-changed',
-            muted
+            muted,
+            changedByUser
         });
     }
 
@@ -894,12 +896,14 @@ class API {
      * changed.
      *
      * @param {boolean} muted - The new muted status.
+     * @param {boolean} changedByUser - This value changed by user or system.
      * @returns {void}
      */
-    notifyVideoMutedStatusChanged(muted: boolean) {
+    notifyVideoMutedStatusChanged(muted: boolean, changedByUser = false) {
         this._sendEvent({
             name: 'video-mute-status-changed',
-            muted
+            muted,
+            changedByUser
         });
     }
 
