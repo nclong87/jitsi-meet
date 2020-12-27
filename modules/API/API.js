@@ -33,6 +33,7 @@ import {
     selectParticipantInLargeVideo
 } from '../../react/features/large-video/actions';
 import { toggleLobbyMode } from '../../react/features/lobby/actions.web';
+import { setRoomData } from '../../react/features/meetingmaker/actions';
 import { setLiveStreamKey } from '../../react/features/recording/actions';
 import { RECORDING_TYPES } from '../../react/features/recording/constants';
 import { getActiveSession } from '../../react/features/recording/functions';
@@ -224,7 +225,14 @@ function initCommands() {
         },
         'set-room-data': data => {
             logger.info('set-room-data', data);
-            const { isCamOn, isMicOn, speakerEmails, isOpenAll } = data;
+            const { isCamOn, isMicOn, speakerEmails, moderatorEmails, isOpenAll, audioOnly } = data;
+
+            APP.store.dispatch(setRoomData({
+                speakerEmails,
+                moderatorEmails,
+                isOpenAll,
+                audioOnly
+            }));
             const currentSpeakers = [];
 
             if (isMicOn !== undefined) {
@@ -234,7 +242,7 @@ function initCommands() {
                 APP.conference.muteVideo(!isCamOn);
             }
             if (speakerEmails !== undefined) {
-                const moderatorEmails = data.moderatorEmails === undefined ? [] : data.moderatorEmails;
+                const _moderatorEmails = moderatorEmails === undefined ? [] : moderatorEmails;
                 const participants = APP.store.getState()['features/base/participants'];
 
                 logger.debug('participants', participants);
@@ -247,7 +255,7 @@ function initCommands() {
                         moderatorId = id;
                     }
                     let isVisible = speakerEmails.indexOf(email) >= 0;
-                    const isModerator = moderatorEmails.indexOf(email) >= 0;
+                    const isModerator = _moderatorEmails.indexOf(email) >= 0;
 
                     if (isVisible === false && isOpenAll === true) {
                         if (isModerator) {
@@ -264,6 +272,7 @@ function initCommands() {
                         currentSpeakers.push(email);
                     }
                 });
+                logger.debug('currentSpeakers', currentSpeakers);
                 APP.store.dispatch(setVisibilityParticipants(currentSpeakers));
                 if (currentSpeakers.length === 1) {
                     sendAnalytics(createApiEvent('participant.pinned'));
