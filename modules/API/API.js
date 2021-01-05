@@ -226,14 +226,6 @@ function initCommands() {
         'set-room-data': data => {
             logger.info('set-room-data', data);
             const { isCamOn, isMicOn, speakerEmails, moderatorEmails, isOpenAll, audioOnly, videoOnly } = data;
-
-            APP.store.dispatch(setRoomData({
-                speakerEmails,
-                moderatorEmails,
-                isOpenAll,
-                audioOnly,
-                videoOnly
-            }));
             const currentSpeakers = [];
 
             if (isMicOn !== undefined) {
@@ -243,6 +235,13 @@ function initCommands() {
                 APP.conference.muteVideo(!isCamOn);
             }
             if (speakerEmails !== undefined) {
+                APP.store.dispatch(setRoomData({
+                    speakerEmails,
+                    moderatorEmails,
+                    isOpenAll,
+                    audioOnly,
+                    videoOnly
+                }));
                 const _moderatorEmails = moderatorEmails === undefined ? [] : moderatorEmails;
                 const participants = APP.store.getState()['features/base/participants'];
 
