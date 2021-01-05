@@ -225,13 +225,14 @@ function initCommands() {
         },
         'set-room-data': data => {
             logger.info('set-room-data', data);
-            const { isCamOn, isMicOn, speakerEmails, moderatorEmails, isOpenAll, audioOnly } = data;
+            const { isCamOn, isMicOn, speakerEmails, moderatorEmails, isOpenAll, audioOnly, videoOnly } = data;
 
             APP.store.dispatch(setRoomData({
                 speakerEmails,
                 moderatorEmails,
                 isOpenAll,
-                audioOnly
+                audioOnly,
+                videoOnly
             }));
             const currentSpeakers = [];
 

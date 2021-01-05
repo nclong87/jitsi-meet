@@ -47,7 +47,7 @@ import {
     LocalRecordingButton,
     LocalRecordingInfoDialog
 } from '../../../local-recording';
-import { isAudioOnly } from '../../../meetingmaker/functions';
+import { isAudioOnly, isVideoOnly } from '../../../meetingmaker/functions';
 import {
     LiveStreamButton,
     RecordButton
@@ -159,6 +159,11 @@ type Props = {
      * Is audio only mode
      */
     _audioOnly: Boolean,
+
+    /**
+     * Is video only mode
+     */
+    _videoOnly: Boolean,
 
     /**
      * The subsection of Redux state for local recording
@@ -1200,7 +1205,7 @@ class Toolbox extends Component<Props, State> {
      * @returns {ReactElement}
      */
     _renderAudioButton() {
-        return this._shouldShowButton('microphone')
+        return !this.props._videoOnly && this._shouldShowButton('microphone')
             ? <AudioSettingsButton
                 key = 'asb'
                 visible = { true } />
@@ -1448,6 +1453,7 @@ function _mapStateToProps(state) {
 
     return {
         _audioOnly: isAudioOnly(state),
+        _videoOnly: isVideoOnly(state),
         _chatOpen: state['features/chat'].isOpen,
         _conference: conference,
         _desktopSharingEnabled: desktopSharingEnabled,
