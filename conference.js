@@ -1746,7 +1746,12 @@ export default {
                 const desktopVideoStream = streams.find(stream => stream.getType() === MEDIA_TYPE.VIDEO);
 
                 if (desktopVideoStream) {
+                    const isLocalVideoMuted = this.isLocalVideoMuted();
+
                     await this.useVideoStream(desktopVideoStream);
+                    if (!isLocalVideoMuted) {
+                        this.muteVideo(false);
+                    }
                 }
 
                 this._desktopAudioStream = streams.find(stream => stream.getType() === MEDIA_TYPE.AUDIO);
