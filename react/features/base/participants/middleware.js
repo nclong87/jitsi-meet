@@ -11,7 +11,7 @@ import {
 } from '../conference';
 import { JitsiConferenceEvents } from '../lib-jitsi-meet';
 import { MiddlewareRegistry, StateListenerRegistry } from '../redux';
-import { playSound, registerSound, unregisterSound } from '../sounds';
+import { playSound } from '../sounds';
 import { getTrackByJitsiTrack, TRACK_ADDED, TRACK_REMOVED, TRACK_UPDATED } from '../tracks';
 
 import {
@@ -45,7 +45,8 @@ import {
     getParticipantDisplayName,
     figureOutMutedWhileDisconnectedStatus
 } from './functions';
-import { PARTICIPANT_JOINED_FILE, PARTICIPANT_LEFT_FILE } from './sounds';
+
+// import { PARTICIPANT_JOINED_FILE, PARTICIPANT_LEFT_FILE } from './sounds';
 
 declare var APP: Object;
 
@@ -59,12 +60,12 @@ declare var APP: Object;
 MiddlewareRegistry.register(store => next => action => {
     switch (action.type) {
     case APP_WILL_MOUNT:
-        _registerSounds(store);
+        // _registerSounds(store);
 
         return _localParticipantJoined(store, next, action);
 
     case APP_WILL_UNMOUNT:
-        _unregisterSounds(store);
+        // _unregisterSounds(store);
 
         return _localParticipantLeft(store, next, action);
 
@@ -454,11 +455,11 @@ function _raiseHandUpdated({ dispatch, getState }, conference, participantId, ne
  * @private
  * @returns {void}
  */
-function _registerSounds({ dispatch }) {
-    dispatch(
-        registerSound(PARTICIPANT_JOINED_SOUND_ID, PARTICIPANT_JOINED_FILE));
-    dispatch(registerSound(PARTICIPANT_LEFT_SOUND_ID, PARTICIPANT_LEFT_FILE));
-}
+// function _registerSounds({ dispatch }) {
+//     dispatch(
+//         registerSound(PARTICIPANT_JOINED_SOUND_ID, PARTICIPANT_JOINED_FILE));
+//     dispatch(registerSound(PARTICIPANT_LEFT_SOUND_ID, PARTICIPANT_LEFT_FILE));
+// }
 
 /**
  * Notifies the feature base/participants that the action there has been a change in the tracks of the participants.
@@ -509,14 +510,14 @@ function _trackChanged({ dispatch, getState }, next, action) {
     return result;
 }
 
-/**
- * Unregisters sounds related with the participants feature.
- *
- * @param {Store} store - The redux store.
- * @private
- * @returns {void}
- */
-function _unregisterSounds({ dispatch }) {
-    dispatch(unregisterSound(PARTICIPANT_JOINED_SOUND_ID));
-    dispatch(unregisterSound(PARTICIPANT_LEFT_SOUND_ID));
-}
+// /**
+//  * Unregisters sounds related with the participants feature.
+//  *
+//  * @param {Store} store - The redux store.
+//  * @private
+//  * @returns {void}
+//  */
+// function _unregisterSounds({ dispatch }) {
+//     dispatch(unregisterSound(PARTICIPANT_JOINED_SOUND_ID));
+//     dispatch(unregisterSound(PARTICIPANT_LEFT_SOUND_ID));
+// }
