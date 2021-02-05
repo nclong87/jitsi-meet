@@ -406,10 +406,14 @@ function _participantJoinedOrUpdated(store, next, action) {
 
     // Notify external listeners of potential avatarURL changes.
     if (typeof APP === 'object') {
-        const currentKnownId = local ? APP.conference.getMyUserId() : id;
+        if (local) {
+            APP.UI.refreshAvatarDisplay(APP.conference.getMyUserId());
+        }
+
+        // const currentKnownId = local ? APP.conference.getMyUserId() : id;
 
         // Force update of local video getting a new id.
-        APP.UI.refreshAvatarDisplay(currentKnownId);
+        // APP.UI.refreshAvatarDisplay(currentKnownId);
     }
 
     return result;
