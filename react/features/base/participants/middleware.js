@@ -2,7 +2,6 @@
 
 import UIEvents from '../../../../service/UI/UIEvents';
 import { NOTIFICATION_TIMEOUT, showNotification } from '../../notifications';
-import { CALLING, INVITED } from '../../presence-status';
 import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../app';
 import {
     CONFERENCE_WILL_JOIN,
@@ -11,7 +10,6 @@ import {
 } from '../conference';
 import { JitsiConferenceEvents } from '../lib-jitsi-meet';
 import { MiddlewareRegistry, StateListenerRegistry } from '../redux';
-import { playSound } from '../sounds';
 import { getTrackByJitsiTrack, TRACK_ADDED, TRACK_REMOVED, TRACK_UPDATED } from '../tracks';
 
 import {
@@ -32,21 +30,18 @@ import {
     participantUpdated,
     setLoadableAvatarUrl
 } from './actions';
-import {
-    LOCAL_PARTICIPANT_DEFAULT_ID,
-    PARTICIPANT_JOINED_SOUND_ID,
-    PARTICIPANT_LEFT_SOUND_ID
-} from './constants';
+import { LOCAL_PARTICIPANT_DEFAULT_ID } from './constants';
 import {
     getFirstLoadableAvatarUrl,
     getLocalParticipant,
     getParticipantById,
-    getParticipantCount,
     getParticipantDisplayName,
     figureOutMutedWhileDisconnectedStatus
 } from './functions';
 
 // import { PARTICIPANT_JOINED_FILE, PARTICIPANT_LEFT_FILE } from './sounds';
+// import { CALLING, INVITED } from '../../presence-status';
+// import { playSound } from '../sounds';
 
 declare var APP: Object;
 
@@ -126,13 +121,13 @@ MiddlewareRegistry.register(store => next => action => {
     }
 
     case PARTICIPANT_JOINED: {
-        _maybePlaySounds(store, action);
+        // _maybePlaySounds(store, action);
 
         return _participantJoinedOrUpdated(store, next, action);
     }
 
     case PARTICIPANT_LEFT:
-        _maybePlaySounds(store, action);
+        // _maybePlaySounds(store, action);
         break;
 
     case PARTICIPANT_UPDATED:
@@ -327,29 +322,29 @@ function _localParticipantLeft({ dispatch }, next, action) {
  * @private
  * @returns {void}
  */
-function _maybePlaySounds({ getState, dispatch }, action) {
-    const state = getState();
-    const { startAudioMuted } = state['features/base/config'];
-
-    // We're not playing sounds for local participant
-    // nor when the user is joining past the "startAudioMuted" limit.
-    // The intention there was to not play user joined notification in big
-    // conferences where 100th person is joining.
-    if (!action.participant.local
-            && (!startAudioMuted
-                || getParticipantCount(state) < startAudioMuted)) {
-        if (action.type === PARTICIPANT_JOINED) {
-            const { presence } = action.participant;
-
-            // The sounds for the poltergeist are handled by features/invite.
-            if (presence !== INVITED && presence !== CALLING) {
-                dispatch(playSound(PARTICIPANT_JOINED_SOUND_ID));
-            }
-        } else if (action.type === PARTICIPANT_LEFT) {
-            dispatch(playSound(PARTICIPANT_LEFT_SOUND_ID));
-        }
-    }
-}
+// function _maybePlaySounds({ getState, dispatch }, action) {
+//     const state = getState();
+//     const { startAudioMuted } = state['features/base/config'];
+//
+//     // We're not playing sounds for local participant
+//     // nor when the user is joining past the "startAudioMuted" limit.
+//     // The intention there was to not play user joined notification in big
+//     // conferences where 100th person is joining.
+//     if (!action.participant.local
+//             && (!startAudioMuted
+//                 || getParticipantCount(state) < startAudioMuted)) {
+//         if (action.type === PARTICIPANT_JOINED) {
+//             const { presence } = action.participant;
+//
+//             // The sounds for the poltergeist are handled by features/invite.
+//             if (presence !== INVITED && presence !== CALLING) {
+//                 dispatch(playSound(PARTICIPANT_JOINED_SOUND_ID));
+//             }
+//         } else if (action.type === PARTICIPANT_LEFT) {
+//             dispatch(playSound(PARTICIPANT_LEFT_SOUND_ID));
+//         }
+//     }
+// }
 
 /**
  * Notifies the feature base/participants that the action

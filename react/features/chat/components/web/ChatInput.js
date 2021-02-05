@@ -59,7 +59,7 @@ type State = {
  * @extends Component
  */
 class ChatInput extends Component<Props, State> {
-    _textArea: ?HTMLTextAreaElement;
+    _textArea: ?HTMLTextAreaElement;s
 
     state = {
         message: '',

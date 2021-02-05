@@ -9,7 +9,6 @@ import { getConferenceNameForTitle } from '../../../base/conference';
 import { connect, disconnect } from '../../../base/connection';
 import { translate } from '../../../base/i18n';
 import { connect as reactReduxConnect } from '../../../base/redux';
-import { Chat } from '../../../chat';
 import { Filmstrip } from '../../../filmstrip';
 import { CalleeInfoContainer } from '../../../invite';
 import { LargeVideo } from '../../../large-video';
@@ -198,7 +197,6 @@ class Conference extends AbstractConference<Props, *> {
                 </div>
 
                 { config.iAmRecorder || _showPrejoin || _isLobbyScreenVisible || <Toolbox /> }
-                <Chat />
 
                 { this.renderNotificationsContainer() }
 

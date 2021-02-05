@@ -1,6 +1,6 @@
 // @flow
 
-import { getGravatarURL } from '@jitsi/js-utils/avatar';
+// import { getGravatarURL } from '@jitsi/js-utils/avatar';
 import memoizeOne from 'memoize-one';
 import type { Store } from 'redux';
 
@@ -35,13 +35,13 @@ const AVATAR_CHECKER_FUNCTIONS = [
         return participant && participant.avatarURL ? participant.avatarURL : null;
     },
     (participant, store) => {
-        if (participant && participant.email) {
-            // TODO: remove once libravatar has deployed their new scaled up infra. -saghul
-            const gravatarBaseURL
-                = store.getState()['features/base/config'].gravatarBaseURL ?? 'https://www.gravatar.com/avatar/';
-
-            return getGravatarURL(participant.email, gravatarBaseURL);
-        }
+        // if (participant && participant.email) {
+        //     // TODO: remove once libravatar has deployed their new scaled up infra. -saghul
+        //     const gravatarBaseURL
+        //         = store.getState()['features/base/config'].gravatarBaseURL ?? 'https://www.gravatar.com/avatar/';
+        //
+        //     return getGravatarURL(participant.email, gravatarBaseURL);
+        // }
 
         return null;
     }

@@ -522,8 +522,6 @@ const VideoLayout = {
             logger.info(`Removing remote video: ${id}`);
             delete remoteVideos[id];
             remoteVideo.remove();
-        } else {
-            logger.warn(`No remote video for ${id}`);
         }
     },
 
@@ -562,10 +560,6 @@ const VideoLayout = {
 
         if (smallVideo) {
             smallVideo.initializeAvatar();
-        } else {
-            logger.warn(
-                `Missed avatar update - no small video yet for ${id}`
-            );
         }
         if (this.isCurrentlyOnLarge(id)) {
             largeVideo.updateAvatar(avatarUrl);
